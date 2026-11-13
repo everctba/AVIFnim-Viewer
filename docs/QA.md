@@ -8,7 +8,7 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | Caso | Arquivo | Esperado | Status |
 |---|---|---|---|
 | AVIF still | `still.avif` | abre, exibe 96×64, badge AVIF | ✅ testado |
-| AVIF animado | — | toca sozinho em loop | ⏳ pendente de amostra animada (sem encoder AVIF no ambiente; gerar com o AVIFnim) |
+| AVIF animado | `anim.avif` (8 frames) | toca sozinho em loop | ✅ testado ([viewer-avif.png](images/viewer-avif.png)); animação confirmada por 2 capturas com hashes diferentes |
 | WebP animado | `anim.webp` | toca em loop, banner contextual | ✅ testado ([viewer.png](images/viewer.png)) |
 | GIF | `anim.gif` | toca em loop, banner contextual | ✅ testado |
 | PPM binário P6 | `p6.ppm` | decodifica em Rust → PNG, exibe | ✅ testado + teste unitário |
@@ -30,11 +30,13 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | Checkerboard / fundos | alternam e persistem | ✅ implementado |
 | Painel Info (I) | mostra nome/formato/dimensões/tamanho/caminho | ✅ testado |
 | Configurações (S) | abre, persiste tema/idioma/prefetch/fundo/FPS | ✅ testado ([settings.png](images/settings.png)) |
-| Sobre (F1) | autor, links, limitações, banner do AVIFnim | ✅ testado ([about.png](images/about.png); AVIF animado do banner pendente de asset) |
+| Sobre (F1) | autor, links, limitações, banner do AVIFnim com AVIF animado | ✅ testado ([about.png](images/about.png)) |
 | Funil (modal após 5ª visualização) | aparece uma vez, dismiss persiste | ✅ testado ([promo.png](images/promo.png)) |
 | Banner GIF/WebP | economia estimada + CTA dispensável | ✅ testado |
 | Instância única + abrir por argumento | segunda instância envia arquivo para a janela existente | ✅ testado |
 | Drag & drop | arquivo abre ao soltar na janela | ✅ implementado (evento Tauri) |
+| Idioma EN-US | troca sem reiniciar, textos completos | ✅ testado ([viewer-light-en.png](images/viewer-light-en.png)) |
+| Tema claro | UI clara + title bar nativa clara | ✅ testado (mesma captura) |
 
 ## Segurança / robustez
 

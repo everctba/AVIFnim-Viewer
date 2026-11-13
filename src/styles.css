@@ -298,12 +298,12 @@ body {
 }
 .promo-art {
   flex: 0 0 92px; height: 92px; border-radius: 12px;
+  object-fit: cover;
   background:
     radial-gradient(circle at 30% 30%, #ffb86b, transparent 45%),
     radial-gradient(circle at 70% 60%, #7c5cff, transparent 50%),
     radial-gradient(circle at 45% 80%, #22d3ee, transparent 45%),
     #1a1a22;
-  animation: promoPulse 3.2s ease-in-out infinite;
 }
 @keyframes promoPulse {
   0%, 100% { filter: hue-rotate(0deg) brightness(1); }
