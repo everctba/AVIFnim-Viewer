@@ -53,10 +53,12 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 
 | Métrica | Meta | Status |
 |---|---|---|
+| Startup (janela criada) | < 1,0 s | ✅ **30–78 ms** (avg 60 ms, 5 runs, release, Windows 10; métrica = janela criada) |
 | Abrir AVIF 5 MB (SSD) | < 300 ms | ⏳ pendente (issue `avifnim-v0w`) |
 | Reprodução 1080p | 60 fps | ⏳ pendente |
-| Startup | < 1,0 s | ⏳ pendente |
 | Memória do prefetch | ≤ teto configurado | ✅ cache LRU com cap + testes unitários |
+
+Reprodução do benchmark: `powershell -File scripts\bench-startup.ps1 -Runs 5`.
 
 ## Testes automatizados
 

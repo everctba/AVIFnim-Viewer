@@ -94,3 +94,15 @@ bd close <id>         # Complete work
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
 <!-- END BEADS INTEGRATION -->
+
+## Build & Test
+
+```bash
+npm install
+scripts\build.bat test    # cargo test (Windows/MSVC) — 24 testes
+scripts\build.bat build   # build release
+npx tauri build           # instalador NSIS em src-tauri/target/release/bundle/nsis
+```
+
+UI em `src/` (HTML/CSS/JS puro); backend em `src-tauri/src/` (Rust/Tauri 2). Detalhes em
+`docs/BUILD.md` e `docs/QA.md`.

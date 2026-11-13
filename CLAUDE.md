@@ -53,18 +53,27 @@ bd close <id>         # Complete work
 
 ## Build & Test
 
-_Add your build and test commands here_
-
 ```bash
-# Example:
-# npm install
-# npm test
+npm install
+scripts\build.bat test    # cargo test (Windows/MSVC) — 24 testes
+scripts\build.bat build   # build release
+npx tauri build           # instalador NSIS em src-tauri/target/release/bundle/nsis
+scripts\build.ps1 test    # wrapper PowerShell (localiza o vcvars64 via vswhere)
 ```
+
+Linux/macOS: veja `docs/BUILD.md`.
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+UI em `src/` (HTML/CSS/JS puro, sem bundler) ↔ comandos Tauri em `src-tauri/src/lib.rs`.
+Rust faz leitura de arquivos, decode PPM/PNM (`pnm.rs`), cache LRU do prefetch (`cache.rs`),
+configurações (`config.rs`) e associações do Windows (`assoc.rs`). AVIF/WebP/GIF são
+decodificados/animados pelo webview do sistema via `<img>` com data URL.
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+- Sem FFmpeg/GPL no binário; PNM via crate `image`.
+- Configurações em JSON no app data; sem telemetria e sem rede na v1.
+- Associações opt-in (HKCU) e nunca alterar o padrão do sistema silenciosamente.
+- Textos em PT-BR/EN-US (i18n em `src/main.js`, chaves `data-i18n`).
+- Fechar issues no bd e rodar `git push` no fim da sessão.

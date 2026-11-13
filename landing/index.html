@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AVIFnim Viewer — visualize AVIF, WebP e GIF animados no seu PC</title>
+    <meta
+      name="description"
+      content="Visualizador gratuito e open source de AVIF, WebP e GIF animados e de sequências PPM/PNM. Leve, sem telemetria, com prefetch e navegação por pasta."
+    />
+    <meta property="og:title" content="AVIFnim Viewer" />
+    <meta
+      property="og:description"
+      content="Abra AVIF animado, WebP, GIF e PPM/PNM com um duplo clique. Grátis, MIT e sem telemetria."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top">
+        <img src="../src/assets/logo.svg" alt="AVIFnim Viewer" width="28" height="28" />
+        <span>AVIFnim Viewer</span>
+      </a>
+      <nav>
+        <a href="#recursos">Recursos</a>
+        <a href="#download">Download</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <h1>Visualize <em>AVIF, WebP e GIF animados</em> no seu PC</h1>
+        <p class="lead">
+          O visualizador nativo do Windows mostra só o primeiro frame do AVIF animado. O AVIFnim
+          Viewer toca em loop, navega pela pasta e também abre PPM/PNM. Grátis e open source.
+        </p>
+        <div class="cta-row" id="download">
+          <a class="btn primary" id="dl-windows" href="https://github.com/everctba/AVIFnim-Viewer/releases/latest">
+            Baixar para Windows
+          </a>
+          <a class="btn" id="dl-macos" href="https://github.com/everctba/AVIFnim-Viewer/releases/latest">
+            macOS (em breve)
+          </a>
+          <a class="btn" id="dl-linux" href="https://github.com/everctba/AVIFnim-Viewer/releases/latest">
+            Linux (em breve)
+          </a>
+        </div>
+        <p class="muted small">
+          MIT · sem telemetria · associações de arquivo opcionais (desmarcadas por padrão)
+        </p>
+      </section>
+
+      <section class="screens">
+        <img src="../docs/images/viewer.png" alt="AVIFnim Viewer exibindo um GIF animado com banner" />
+      </section>
+
+      <section id="recursos" class="features">
+        <h2>Por que usar</h2>
+        <div class="grid">
+          <article>
+            <h3>AVIF animado de verdade</h3>
+            <p>Usa o webview do sistema para animar AVIF, WebP e GIF, com loop conforme o arquivo.</p>
+          </article>
+          <article>
+            <h3>PPM/PNM para render/VFX</h3>
+            <p>Decodifica P1–P6 (8/16-bit) em Rust, para inspecionar frames do Blender/Nuke.</p>
+          </article>
+          <article>
+            <h3>Navegação instantânea</h3>
+            <p>Prefetch bidirecional dos arquivos vizinhos, com teto de memória configurável.</p>
+          </article>
+          <article>
+            <h3>Sequências a 30/60 fps</h3>
+            <p>Abra um frame e o viewer detecta a sequência PNG/JPG e toca em loop.</p>
+          </article>
+          <article>
+            <h3>Leve e respeitoso</h3>
+            <p>Tauri 2 + Rust, sem telemetria, sem contas e sem sequestrar seus formatos.</p>
+          </article>
+          <article>
+            <h3>Seu próximo passo: AVIFnim</h3>
+            <p>Quer converter sequências e vídeo para AVIF animado? Conheça o AVIFnim.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="funnel">
+        <div>
+          <h2>Gostou de ver AVIF animado?</h2>
+          <p>
+            O <strong>AVIFnim</strong> é o conversor que cria AVIF animado a partir de sequências,
+            vídeo e gravação de tela.
+          </p>
+        </div>
+        <a class="btn primary" id="cta-avifnim" href="#">Conhecer o AVIFnim</a>
+      </section>
+
+      <section id="faq" class="faq">
+        <h2>Perguntas frequentes</h2>
+        <details>
+          <summary>O AVIFnim Viewer converte imagens?</summary>
+          <p>Não. Ele só visualiza. Conversão é o trabalho do AVIFnim pago.</p>
+        </details>
+        <details>
+          <summary>Preciso instalar o AV1 Video Extension?</summary>
+          <p>Não para o viewer: ele usa o WebView2, que já decodifica AVIF no Windows atualizado.</p>
+        </details>
+        <details>
+          <summary>Ele vira o visualizador padrão sozinho?</summary>
+          <p>Não. As associações são opcionais e desmarcadas por padrão.</p>
+        </details>
+        <details>
+          <summary>É open source?</summary>
+          <p>Sim, MIT. O código está no GitHub.</p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Desenvolvido por <strong>Everson Mayer</strong> ·
+        <a href="https://github.com/everctba/AVIFnim-Viewer">GitHub</a> ·
+        <a href="mailto:mayerdesigner@gmail.com">contato</a>
+      </p>
+      <p class="muted small">
+        AVIFnim Viewer é um projeto separado do AVIFnim. Licença MIT.
+      </p>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
