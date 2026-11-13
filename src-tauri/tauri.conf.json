@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "AVIFnim Viewer",
+  "version": "0.1.0",
+  "identifier": "com.avifnim.viewer",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "AVIFnim Viewer",
+        "width": 1100,
+        "height": 740,
+        "minWidth": 560,
+        "minHeight": 400,
+        "center": true,
+        "dragDropEnabled": true,
+        "theme": "Dark"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob: asset: https://asset.localhost; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' ipc: http://ipc.localhost; font-src 'self' data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "category": "Utility",
+    "shortDescription": "Visualizador de AVIF, WebP, GIF animados e PPM/PNM",
+    "longDescription": "AVIFnim Viewer e um visualizador gratuito e open source (MIT) de imagens animadas AVIF, WebP e GIF, e de sequencias/stills PPM/PNM. Abre, toca em loop e navega pastas com prefetch bidirecional. Sem telemetria.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "displayLanguageSelector": true,
+        "languages": ["PortugueseBR", "English"]
+      }
+    }
+  }
+}

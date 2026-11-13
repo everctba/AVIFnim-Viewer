@@ -1,0 +1,19 @@
+{
+  "name": "avifnim-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Visualizador gratuito e open source de AVIF, WebP, GIF animados e PPM/PNM",
+  "license": "MIT",
+  "author": "Everson Mayer <mayerdesigner@gmail.com>",
+  "repository": "https://github.com/everctba/AVIFnim-Viewer",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:debug": "tauri build --debug",
+    "icons": "tauri icon An-Favicon.png"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  }
+}
