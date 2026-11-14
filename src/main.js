@@ -739,6 +739,23 @@ function prefetchNeighbors() {
 
 /* ---------------- zoom / pan ---------------- */
 
+function effectiveZoomScale() {
+  if (!state.fitMode) return state.zoom;
+  const img = $("viewer-img");
+  const viewport = $("viewport");
+  if (!img || !viewport || !img.naturalWidth || !img.naturalHeight) return 1;
+  const vw = viewport.clientWidth;
+  const vh = viewport.clientHeight;
+  if (!vw || !vh) return 1;
+  return Math.min(1, vw / img.naturalWidth, vh / img.naturalHeight);
+}
+
+function updateZoomLabel() {
+  const label = $("zoom-label");
+  if (!label) return;
+  label.textContent = Math.round(effectiveZoomScale() * 100) + "%";
+}
+
 function applyView() {
   const img = $("viewer-img");
   const viewport = $("viewport");
@@ -750,7 +767,7 @@ function applyView() {
     img.style.transform = "";
   }
   viewport.classList.toggle("can-pan", actual && state.zoom > 1);
-  $("zoom-label").textContent = state.fitMode ? t("toolbar.fit") : Math.round(state.zoom * 100) + "%";
+  updateZoomLabel();
 }
 
 function resetView() {
@@ -801,6 +818,7 @@ function updateInfo() {
   $("info-seq").textContent = seqText;
   $("info-path").textContent = cur.path || "—";
   $("info-path").title = cur.path || "";
+  updateZoomLabel();
 }
 
 /* ---------------- banner / promo ---------------- */
@@ -1383,7 +1401,6 @@ function bindUi() {
   $("btn-next").addEventListener("click", () => navigate(1));
   $("btn-zoom-out").addEventListener("click", () => zoomBy(0.8));
   $("btn-zoom-in").addEventListener("click", () => zoomBy(1.25));
-  $("btn-fit").addEventListener("click", setFit);
   $("btn-100").addEventListener("click", setActual);
   $("btn-fullscreen").addEventListener("click", toggleFullscreen);
   $("btn-info").addEventListener("click", toggleInfo);
@@ -1481,6 +1498,7 @@ function bindUi() {
     $("viewer-img").classList.add("hidden");
     showError(t("error.decode"));
   });
+  $("viewer-img").addEventListener("load", () => updateZoomLabel());
 
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
     if (state.settings.theme === "auto") applyTheme();

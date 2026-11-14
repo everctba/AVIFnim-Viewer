@@ -8,8 +8,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 ### Alterado
 
 - **Novo ícone do aplicativo** (design do owner, `icone.png` → ícones Windows/macOS/Linux).
-- **Barra de ferramentas movida para o rodapé** da janela (arquivo, navegação, zoom, Fit,
-  tela cheia, informações, configurações e sobre ficam embaixo).
+- **Barra de ferramentas reorganizada e no rodapé**: abrir → nome do arquivo → ← → tela cheia → →
+  → zoom − → **100%** → zoom + → **percentual de zoom** (o botão Fit foi removido; use 100% ou
+  duplo clique para alternar Fit/100%).
 - **Menu de contexto abre sempre para baixo** do clique (com rolagem interna se faltar espaço).
 - **Modo tela cheia**: fundo 100% preto, barra de ferramentas oculta — apenas a imagem
   (Esc ou F para sair).
