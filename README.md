@@ -11,10 +11,11 @@ stills/sequências **PPM/PNM** para Windows, macOS e Linux — construído com *
 
 | Plataforma | Artefato |
 |---|---|
-| **Windows 10/11 x64** | [Instalador NSIS (v0.1.0)](https://github.com/everctba/AVIFnim-Viewer/releases/latest) |
-| **Linux x64** | `.deb` gerado no CI (`ubuntu-22.04`, WebKitGTK 4.1) — anexado ao release |
-| **macOS 13+** | `.dmg` universal gerado no CI (`macos-13`) — anexado ao release |
+| **Windows 10/11 x64** | [Instalador NSIS (v0.1.0)](https://github.com/everctba/AVIFnim-Viewer/releases/download/v0.1.0/AVIFnim.Viewer_0.1.0_x64-setup.exe) |
+| **Linux x64** | [`.deb` (v0.1.0)](https://github.com/everctba/AVIFnim-Viewer/releases/download/v0.1.0/AVIFnim.Viewer_0.1.0_amd64.deb) — Ubuntu 24.04+/Mint, WebKitGTK 4.1 |
+| **macOS 13+** | `.dmg` universal gerado no CI (`macos-13`) — anexado ao release quando o runner ficar disponível |
 
+Página de releases com todos os arquivos: https://github.com/everctba/AVIFnim-Viewer/releases/latest
 Sem assinatura de código / notarização nesta versão (decisões pendentes).
 
 > **Por que existe:** os visualizadores nativos dos sistemas costumam abrir AVIF, mas **não
