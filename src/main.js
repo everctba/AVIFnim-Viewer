@@ -1018,14 +1018,19 @@ function setupContextMenu() {
   });
 
   // Substitui o menu nativo do webview (Edge/WebKit) pelo nosso.
+  // Sem imagem carregada: nenhum menu (nem o nativo, exceto em campos de texto).
   document.addEventListener("contextmenu", (event) => {
     if (event.target.closest("#ctx-menu")) {
       event.preventDefault();
       return;
     }
+    // mantem o menu nativo em campos de texto (copiar/colar)
+    if (event.target.closest("input, textarea, select")) return;
+    event.preventDefault();
     if (state.current && event.target.closest("#stage")) {
-      event.preventDefault();
       showCtxMenu(event.clientX, event.clientY);
+    } else {
+      hideCtxMenu();
     }
   });
 

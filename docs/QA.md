@@ -28,6 +28,7 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | Zoom +/-, fit, 100% | não distorce, label atualiza | ✅ testado |
 | Duplo clique esquerdo | alterna Fit ↔ 100% | ✅ testado (capturas: label 100% e Fit) |
 | Menu de contexto (botão direito) | substitui menu nativo; ações e fechamento (Esc/clique fora) | ✅ testado ([context-menu.png](images/context-menu.png)) |
+| Sem imagem carregada | nenhum menu nativo (nem Edge) ao clicar com o botão direito | ✅ testado ([empty-no-menu.png](images/empty-no-menu.png)) |
 | Fullscreen (F) | entra/sai da tela cheia | ✅ testado: fundo 100% preto e toolbar oculta ([fullscreen.png](images/fullscreen.png)) |
 | Checkerboard / fundos | alternam e persistem | ✅ implementado |
 | Painel Info (I) | mostra nome/formato/dimensões/tamanho/caminho | ✅ testado |
