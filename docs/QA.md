@@ -57,7 +57,7 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | Plataforma | Evidência |
 |---|---|
 | **Windows 10/11 x64** | build local + instalador NSIS testado (instala/roda/desinstala); release v0.1.0 publicado |
-| **Linux x64 (.deb)** | build verde no GitHub Actions (`ubuntu-22.04`, WebKitGTK 4.1); `.deb` validado: magic `!<arch>`, control `Package: avi-fnim-viewer`, `Version: 0.1.0`, `Architecture: amd64`, `Depends: libwebkit2gtk-4.1-0, libgtk-3-0`, data com `usr/bin/avifnim-viewer`, `.desktop` e ícones. Execução real em distro: pendente (sem Linux no ambiente local). |
+| **Linux x64 (.deb)** | build + **runtime validados no GitHub Actions**: job `linux-deb` (`ubuntu-22.04`, WebKitGTK 4.1) e job `linux-runtime` instala o `.deb` com `apt` e roda `avifnim-viewer` por 15 s sob Xvfb **sem crash** (SUCCESS). `.deb` validado: magic `!<arch>`, control `Package: avi-fnim-viewer`, `Version: 0.1.0`, `Architecture: amd64`, `Depends: libwebkit2gtk-4.1-0, libgtk-3-0`, data com `usr/bin/avifnim-viewer`, `.desktop` e ícones. Publicado no release v0.1.0. |
 | **macOS 13+ (.dmg universal)** | build no GitHub Actions (`macos-13`, targets Intel + Apple Silicon) — acompanhando no workflow `platforms.yml`. Notarização pendente (`avifnim-xqo`). |
 
 ## Desempenho (benchmark)

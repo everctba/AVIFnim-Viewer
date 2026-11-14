@@ -18,6 +18,11 @@ stills/sequências **PPM/PNM** para Windows, macOS e Linux — construído com *
 Página de releases com todos os arquivos: https://github.com/everctba/AVIFnim-Viewer/releases/latest
 Sem assinatura de código / notarização nesta versão (decisões pendentes).
 
+**Instalação:**
+- Windows: execute o instalador NSIS (SmartScreen pode pedir confirmação).
+- Linux: `sudo apt install ./AVIFnim.Viewer_0.1.0_amd64.deb`
+- macOS: abra o `.dmg`, arraste o app para Applications; sem notarização, use "Abrir" no menu de contexto na primeira vez.
+
 > **Por que existe:** os visualizadores nativos dos sistemas costumam abrir AVIF, mas **não
 > animam** (no Windows, o Fotos mostra só o primeiro frame); e PPM/PNM não é suportado por
 > webview nenhum. O AVIFnim Viewer resolve isso sendo leve, focado e respeitoso.
