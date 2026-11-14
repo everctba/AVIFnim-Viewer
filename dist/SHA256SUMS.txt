@@ -1,0 +1,3 @@
+6172a7791a089a68e679d94fa33d459d041d12e5e132ad604cd9dcb06735a82f  AVIFnim.Viewer_0.1.0_amd64.deb
+d1b67c771c58e1c1d5fcae1241c0a3fafac8220bd615e96c753d39fbb7912a3e  AVIFnim.Viewer_0.1.0_universal.dmg
+3444c5e67773ab2629eff866524fb19826544c8603b9f8ac12df605f7fef5ab4  AVIFnim.Viewer_0.1.0_x64-setup.exe

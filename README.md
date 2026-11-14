@@ -18,6 +18,10 @@ stills/sequências **PPM/PNM** para Windows, macOS e Linux — construído com *
 Página de releases com todos os arquivos: https://github.com/everctba/AVIFnim-Viewer/releases/latest
 Sem assinatura de código / notarização nesta versão (decisões pendentes).
 
+Os instaladores também ficam na pasta local [`dist/`](dist/README.md) após o build/coleta
+(`scripts/collect-dist.ps1`); os binários não são versionados no git, mas os hashes em
+[`dist/SHA256SUMS.txt`](dist/SHA256SUMS.txt) conferem com os assets da release.
+
 **Instalação:**
 - Windows: execute o instalador NSIS (SmartScreen pode pedir confirmação).
 - Linux: `sudo apt install ./AVIFnim.Viewer_0.1.0_amd64.deb`
