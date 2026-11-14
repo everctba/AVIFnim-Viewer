@@ -16,8 +16,11 @@ dist/*.deb
 dist/*.dmg
 dist/*.msi
 
-# Fontes de design (Photoshop fica fora do git; icone.png e os icones gerados sao versionados)
+# Fonte de design (Photoshop fica fora do git; icone.png e os icones gerados sao versionados)
 *.psd
+
+# Build portatil (pasta unpacked com o exe)
+dist/*-unpacked/
 
 # Amostras grandes de benchmark (regeneraveis com scripts/make-test-assets.py)
 tests/assets/big-*.avif
