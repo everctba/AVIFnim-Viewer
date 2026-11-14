@@ -22,6 +22,8 @@ pub struct Settings {
     pub show_tips: bool,
     pub promo_seen: bool,
     pub banner_dismissed: bool,
+    /// Reseta zoom/pan/fit ao trocar de arquivo (FR-05: configutavel).
+    pub reset_view_on_navigate: bool,
     pub view_count: u32,
     /// intencao do usuario por grupo: avif | webp | gif | pnm
     pub associations: HashMap<String, bool>,
@@ -44,6 +46,7 @@ impl Default for Settings {
             show_tips: true,
             promo_seen: false,
             banner_dismissed: false,
+            reset_view_on_navigate: true,
             view_count: 0,
             associations,
         }

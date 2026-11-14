@@ -64,6 +64,31 @@ npx tauri build --bundles deb
 
 WebKitGTK 4.1 com suporte a AVIF animado é o principal risco — ver spike `avifnim-6zp`.
 
+## Builds de CI (GitHub Actions)
+
+Além do build local, o repositório tem workflows para gerar os artefatos multiplataforma sem
+precisar de macOS/Linux na máquina:
+
+| Workflow | Runner | Artefato |
+|---|---|---|
+| `.github/workflows/platforms.yml` → `linux-deb` | `ubuntu-22.04` | `src-tauri/target/release/bundle/deb/*.deb` |
+| `.github/workflows/platforms.yml` → `macos-dmg` | `macos-14` (universal Intel + ARM) | `src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg` |
+| `.github/workflows/ci.yml` | `windows-latest` | testes + clippy + build debug |
+| `.github/workflows/release.yml` | `windows-latest` | release draft com instalador NSIS |
+
+Para disparar manualmente (via API ou GitHub UI em Actions → Platforms → Run workflow):
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/everctba/AVIFnim-Viewer/actions/workflows/platforms.yml/dispatches \
+  -d '{"ref":"master"}'
+```
+
+Os artefatos ficam disponíveis em Actions → run → Artifacts. O `.deb` pode ser inspecionado com
+`dpkg-deb -I arquivo.deb` e instalado com `sudo apt install ./arquivo.deb`; o `.dmg` é aberto no macOS.
+
 ## Testes
 
 ```bash

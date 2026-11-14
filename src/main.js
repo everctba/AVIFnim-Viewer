@@ -25,6 +25,7 @@ const DEFAULT_SETTINGS = {
   show_tips: true,
   promo_seen: false,
   banner_dismissed: false,
+  reset_view_on_navigate: true,
   view_count: 0,
   associations: { avif: false, webp: false, gif: false, pnm: false },
 };
@@ -82,6 +83,7 @@ const I18N = {
     "settings.background": "Fundo padrão",
     "settings.checker": "Mostrar checkerboard de transparência",
     "settings.tips": "Mostrar dicas",
+    "settings.resetView": "Resetar zoom/pan ao trocar de arquivo",
     "settings.performance": "Desempenho",
     "settings.prefetchN": "Prefetch (arquivos para cada lado)",
     "settings.prefetchMb": "Teto de memória do prefetch",
@@ -183,6 +185,7 @@ const I18N = {
     "settings.background": "Default background",
     "settings.checker": "Show transparency checkerboard",
     "settings.tips": "Show tips",
+    "settings.resetView": "Reset zoom/pan when switching files",
     "settings.performance": "Performance",
     "settings.prefetchN": "Prefetch (files on each side)",
     "settings.prefetchMb": "Prefetch memory cap",
@@ -437,12 +440,15 @@ async function showCurrent() {
   const entry = state.siblings[state.index];
   if (!entry) return;
   const startedAt = performance.now();
+  const hadImage = !!state.current;
   setBusy(true);
   try {
     const data = await invoke("load_image", { path: entry.path });
     state.current = data;
     state.imageErrorShown = false;
-    resetView();
+    if (!hadImage || state.settings.reset_view_on_navigate !== false) {
+      resetView();
+    }
     const img = $("viewer-img");
     img.classList.remove("hidden");
     img.src = data.dataUrl;
@@ -839,6 +845,7 @@ function fillSettingsForm() {
   $("set-background").value = s.background;
   $("set-checker").checked = !!s.checkerboard;
   $("set-tips").checked = !!s.show_tips;
+  $("set-reset-view").checked = s.reset_view_on_navigate !== false;
   $("set-prefetch-n").value = String(s.prefetch_n);
   $("set-prefetch-mb").value = String(s.prefetch_mb);
   $("set-seq-fps").value = String(s.seq_fps);
@@ -1135,6 +1142,9 @@ function bindUi() {
   $("set-background").addEventListener("change", (event) => persistSettings({ background: event.target.value }));
   $("set-checker").addEventListener("change", (event) => persistSettings({ checkerboard: event.target.checked }));
   $("set-tips").addEventListener("change", (event) => persistSettings({ show_tips: event.target.checked }));
+  $("set-reset-view").addEventListener("change", (event) =>
+    persistSettings({ reset_view_on_navigate: event.target.checked }),
+  );
   $("set-prefetch-n").addEventListener("change", (event) => persistSettings({ prefetch_n: Number(event.target.value) }));
   $("set-prefetch-mb").addEventListener("change", (event) => persistSettings({ prefetch_mb: Number(event.target.value) }));
   $("set-seq-fps").addEventListener("change", (event) => {

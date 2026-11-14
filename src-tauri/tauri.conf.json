@@ -42,7 +42,8 @@
       "nsis": {
         "installMode": "currentUser",
         "displayLanguageSelector": true,
-        "languages": ["PortugueseBR", "English"]
+        "languages": ["PortugueseBR", "English"],
+        "installerHooks": "windows/nsis-hooks.nsh"
       }
     }
   }
