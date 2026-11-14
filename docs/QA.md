@@ -26,6 +26,8 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 |---|---|---|
 | Setas ← → e botões prev/next | troca de arquivo com ordenação natural | ✅ testado |
 | Zoom +/-, fit, 100% | não distorce, label atualiza | ✅ testado |
+| Duplo clique esquerdo | alterna Fit ↔ 100% | ✅ testado (capturas: label 100% e Fit) |
+| Menu de contexto (botão direito) | substitui menu nativo; ações e fechamento (Esc/clique fora) | ✅ testado ([context-menu.png](images/context-menu.png)) |
 | Fullscreen (F) | entra/sai da tela cheia | ✅ implementado |
 | Checkerboard / fundos | alternam e persistem | ✅ implementado |
 | Painel Info (I) | mostra nome/formato/dimensões/tamanho/caminho | ✅ testado |

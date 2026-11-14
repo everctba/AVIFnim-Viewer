@@ -74,6 +74,8 @@ pub struct AppInfo {
     pub repo_url: String,
     pub site_url: String,
     pub avifnim_url: String,
+    /// windows | macos | linux
+    pub platform: String,
 }
 
 fn ext_lower(path: &Path) -> String {
@@ -308,6 +310,59 @@ fn app_info() -> AppInfo {
         repo_url: REPO_URL.into(),
         site_url: SITE_URL.into(),
         avifnim_url: AVIFNIM_URL.into(),
+        platform: std::env::consts::OS.into(),
+    }
+}
+
+/// Abre a pasta do arquivo no gerenciador de arquivos do sistema (cross-platform).
+#[tauri::command]
+fn reveal_in_folder(path: String) -> Result<(), String> {
+    let file = PathBuf::from(&path);
+    if !file.exists() {
+        return Err(format!("Arquivo nao encontrado: {}", file.display()));
+    }
+    let folder = file
+        .parent()
+        .map(|p| p.to_path_buf())
+        .unwrap_or_else(|| file.clone());
+
+    #[cfg(target_os = "windows")]
+    let result = std::process::Command::new("explorer.exe")
+        .arg(&folder)
+        .spawn();
+
+    #[cfg(target_os = "macos")]
+    let result = std::process::Command::new("open").arg(&folder).spawn();
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let result = std::process::Command::new("xdg-open").arg(&folder).spawn();
+
+    result
+        .map(|_| ())
+        .map_err(|e| format!("Falha ao abrir a pasta: {e}"))
+}
+
+/// Abre o dialogo "Abrir com..." do Windows. Em outras plataformas retorna erro.
+#[tauri::command]
+fn open_with_dialog(path: String) -> Result<(), String> {
+    let file = PathBuf::from(&path);
+    if !file.exists() {
+        return Err(format!("Arquivo nao encontrado: {}", file.display()));
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("rundll32.exe")
+            .arg("shell32.dll,OpenAs_RunDLL")
+            .arg(&file)
+            .spawn()
+            .map(|_| ())
+            .map_err(|e| format!("Falha ao abrir 'Abrir com...': {e}"))
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        Err("'Abrir com...' esta disponivel apenas no Windows".into())
     }
 }
 
@@ -454,7 +509,9 @@ pub fn run() {
             set_window_theme,
             set_window_title,
             bench_mode,
-            bench_log
+            bench_log,
+            reveal_in_folder,
+            open_with_dialog
         ])
         .build(tauri::generate_context!())
         .expect("erro ao inicializar o AVIFnim Viewer")

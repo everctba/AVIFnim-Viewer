@@ -275,6 +275,24 @@
       </div>
     </div>
 
+    <div id="ctx-menu" class="ctx-menu hidden" role="menu" aria-label="Menu de contexto">
+      <button class="ctx-item" role="menuitem" data-action="open"><span data-i18n="menu.open">Abrir…</span><kbd>Ctrl+O</kbd></button>
+      <button class="ctx-item" role="menuitem" data-action="open-with" data-windows-only><span data-i18n="menu.openWith">Abrir com…</span></button>
+      <button class="ctx-item" role="menuitem" data-action="reveal"><span data-i18n="menu.reveal">Mostrar na pasta</span></button>
+      <button class="ctx-item" role="menuitem" data-action="copy-path"><span data-i18n="menu.copyPath">Copiar caminho</span></button>
+      <button class="ctx-item" role="menuitem" data-action="copy-image"><span data-i18n="menu.copyImage">Copiar imagem</span></button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-item" role="menuitem" data-action="fit"><span data-i18n="menu.fit">Ajustar à janela</span><kbd>0</kbd></button>
+      <button class="ctx-item" role="menuitem" data-action="actual"><span data-i18n="menu.actual">Tamanho real (100%)</span></button>
+      <button class="ctx-item" role="menuitem" data-action="zoom-in"><span data-i18n="menu.zoomIn">Mais zoom</span><kbd>+</kbd></button>
+      <button class="ctx-item" role="menuitem" data-action="zoom-out"><span data-i18n="menu.zoomOut">Menos zoom</span><kbd>−</kbd></button>
+      <button class="ctx-item" role="menuitem" data-action="fullscreen"><span data-i18n="menu.fullscreen">Tela cheia</span><kbd>F</kbd></button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-item" role="menuitem" data-action="info"><span data-i18n="menu.info">Informações</span><kbd>I</kbd></button>
+      <button class="ctx-item" role="menuitem" data-action="settings"><span data-i18n="menu.settings">Configurações</span><kbd>S</kbd></button>
+      <button class="ctx-item" role="menuitem" data-action="about"><span data-i18n="menu.about">Sobre o AVIFnim Viewer</span></button>
+    </div>
+
     <div id="toast" class="toast hidden" role="status"></div>
 
     <script src="main.js"></script>

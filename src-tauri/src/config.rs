@@ -38,10 +38,10 @@ impl Default for Settings {
         Self {
             theme: "auto".into(),
             lang: "pt".into(),
-            prefetch_n: 2,
+            prefetch_n: 3,
             prefetch_mb: 128,
             background: "dark".into(),
-            checkerboard: true,
+            checkerboard: false,
             seq_fps: 60,
             show_tips: true,
             promo_seen: false,
@@ -128,7 +128,8 @@ mod tests {
         let settings = load(&dir);
         assert_eq!(settings.lang, "en");
         assert_eq!(settings.view_count, 7);
-        assert_eq!(settings.prefetch_n, 2, "defaults devem ser preservados");
+        assert_eq!(settings.prefetch_n, 3, "defaults devem ser preservados");
+        assert!(!settings.checkerboard, "checkerboard desligado por padrao");
     }
 
     #[test]

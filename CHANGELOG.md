@@ -3,6 +3,23 @@
 Todas as mudanças notáveis deste projeto são documentadas aqui.
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.1.1] — 2026-11-13
+
+### Adicionado
+
+- **Menu de contexto próprio sobre a imagem** (substitui o menu nativo do webview):
+  Abrir…, Abrir com… (Windows), Mostrar na pasta, Copiar caminho, Copiar imagem,
+  Ajustar à janela, Tamanho real (100%), Mais/Menos zoom, Tela cheia, Informações,
+  Configurações e Sobre. Fecha com Esc, clique fora ou clique em um item; navegável por teclado.
+- **Duplo clique esquerdo alterna entre Fit e 100%**.
+- Comandos cross-platform `reveal_in_folder` (Explorer/Finder/gerenciador) e
+  `open_with_dialog` (Windows), com o item "Abrir com…" oculto nas outras plataformas.
+
+### Alterado
+
+- **Prefetch padrão agora é 3** arquivos para cada lado (antes 2).
+- **Checkerboard de transparência desligado por padrão** (antes ligado); continua configurável.
+
 ## [0.1.0] — 2026-11-13
 
 **Download:** [GitHub Releases — v0.1.0](https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.0)

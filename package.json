@@ -1,6 +1,6 @@
 {
   "name": "avifnim-viewer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Visualizador gratuito e open source de AVIF, WebP, GIF animados e PPM/PNM",
   "license": "MIT",

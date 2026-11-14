@@ -17,10 +17,10 @@ const SEQ_BUFFER_MAX = 48;
 const DEFAULT_SETTINGS = {
   theme: "auto",
   lang: "pt",
-  prefetch_n: 2,
+  prefetch_n: 3,
   prefetch_mb: 128,
   background: "dark",
-  checkerboard: true,
+  checkerboard: false,
   seq_fps: 60,
   show_tips: true,
   promo_seen: false,
@@ -131,6 +131,24 @@ const I18N = {
     "toast.linkPending": "O link oficial do AVIFnim será adicionado em breve.",
     "toast.reset": "Configurações restauradas",
     "toast.promoReset": "O modal do AVIFnim voltará a aparecer",
+    "toast.pathCopied": "Caminho copiado",
+    "toast.imageCopied": "Imagem copiada",
+    "toast.clipboardFail": "Não foi possível copiar",
+    "toast.assocFail": "Falha ao atualizar a associação",
+
+    "menu.open": "Abrir…",
+    "menu.openWith": "Abrir com…",
+    "menu.reveal": "Mostrar na pasta",
+    "menu.copyPath": "Copiar caminho",
+    "menu.copyImage": "Copiar imagem",
+    "menu.fit": "Ajustar à janela",
+    "menu.actual": "Tamanho real (100%)",
+    "menu.zoomIn": "Mais zoom",
+    "menu.zoomOut": "Menos zoom",
+    "menu.fullscreen": "Tela cheia",
+    "menu.info": "Informações",
+    "menu.settings": "Configurações",
+    "menu.about": "Sobre o AVIFnim Viewer",
     "toast.copied": "Copiado",
   },
   en: {
@@ -233,6 +251,24 @@ const I18N = {
     "toast.linkPending": "The official AVIFnim link will be added soon.",
     "toast.reset": "Settings restored",
     "toast.promoReset": "The AVIFnim modal will appear again",
+    "toast.pathCopied": "Path copied",
+    "toast.imageCopied": "Image copied",
+    "toast.clipboardFail": "Could not copy",
+    "toast.assocFail": "Could not update the association",
+
+    "menu.open": "Open…",
+    "menu.openWith": "Open with…",
+    "menu.reveal": "Show in folder",
+    "menu.copyPath": "Copy path",
+    "menu.copyImage": "Copy image",
+    "menu.fit": "Fit to window",
+    "menu.actual": "Actual size (100%)",
+    "menu.zoomIn": "Zoom in",
+    "menu.zoomOut": "Zoom out",
+    "menu.fullscreen": "Fullscreen",
+    "menu.info": "Info",
+    "menu.settings": "Settings",
+    "menu.about": "About AVIFnim Viewer",
     "toast.copied": "Copied",
   },
 };
@@ -261,6 +297,8 @@ const state = {
   benchFrames: 0,
   benchStart: 0,
   imageErrorShown: false,
+  ctxOpen: false,
+  platform: "windows",
 };
 
 /* ---------------- helpers ---------------- */
@@ -394,10 +432,12 @@ async function loadSettings() {
 async function loadAppInfo() {
   try {
     state.appInfo = await invoke("app_info");
+    state.platform = (state.appInfo && state.appInfo.platform) || "windows";
     const version = $("about-version");
     if (version && state.appInfo) version.textContent = "v" + state.appInfo.version;
     const site = $("about-site");
     if (site && state.appInfo) site.textContent = state.appInfo.siteUrl || "—";
+    applyPlatformMenu();
   } catch (err) {
     console.warn("app_info", err);
   }
@@ -439,6 +479,7 @@ async function openPath(path) {
 async function showCurrent() {
   const entry = state.siblings[state.index];
   if (!entry) return;
+  hideCtxMenu();
   const startedAt = performance.now();
   const hadImage = !!state.current;
   setBusy(true);
@@ -804,11 +845,216 @@ function openAvifnim() {
   invoke("open_url", { url }).catch((err) => toast(String(err)));
 }
 
+/* ---------------- menu de contexto (mouse direito) ---------------- */
+
+function applyPlatformMenu() {
+  const isWindows = state.platform === "windows";
+  document.querySelectorAll("[data-windows-only]").forEach((el) => {
+    el.hidden = !isWindows;
+  });
+}
+
+function showCtxMenu(clientX, clientY) {
+  const menu = $("ctx-menu");
+  if (!menu || !state.current) return;
+  menu.classList.remove("hidden");
+  state.ctxOpen = true;
+  const rect = menu.getBoundingClientRect();
+  const left = Math.max(8, Math.min(clientX, window.innerWidth - rect.width - 8));
+  const top = Math.max(8, Math.min(clientY, window.innerHeight - rect.height - 8));
+  menu.style.left = left + "px";
+  menu.style.top = top + "px";
+  const first = menu.querySelector(".ctx-item:not([hidden])");
+  if (first) first.focus();
+}
+
+function hideCtxMenu() {
+  const menu = $("ctx-menu");
+  if (!menu || menu.classList.contains("hidden")) return;
+  menu.classList.add("hidden");
+  state.ctxOpen = false;
+}
+
+async function copyTextToClipboard(text) {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      throw new Error("clipboard indisponivel");
+    }
+    toast(t("toast.pathCopied"));
+  } catch {
+    try {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      area.remove();
+      toast(t("toast.pathCopied"));
+    } catch {
+      toast(t("toast.clipboardFail"));
+    }
+  }
+}
+
+function copyImageToClipboard() {
+  const img = $("viewer-img");
+  if (!img || !img.naturalWidth || !state.current) {
+    toast(t("toast.clipboardFail"));
+    return;
+  }
+  const path = state.current.path;
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    copyTextToClipboard(path);
+    return;
+  }
+  context.drawImage(img, 0, 0);
+  canvas.toBlob(
+    (blob) => {
+      if (!blob) {
+        copyTextToClipboard(path);
+        return;
+      }
+      const finish = async () => {
+        try {
+          if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+            await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+            toast(t("toast.imageCopied"));
+          } else {
+            await copyTextToClipboard(path);
+          }
+        } catch {
+          await copyTextToClipboard(path);
+        }
+      };
+      finish();
+    },
+    "image/png",
+  );
+}
+
+function runCtxAction(action) {
+  if (!state.current) return;
+  const path = state.current.path;
+  switch (action) {
+    case "open":
+      openDialog();
+      break;
+    case "open-with":
+      invoke("open_with_dialog", { path }).catch((err) => toast(String(err)));
+      break;
+    case "reveal":
+      invoke("reveal_in_folder", { path }).catch((err) => toast(String(err)));
+      break;
+    case "copy-path":
+      copyTextToClipboard(path);
+      break;
+    case "copy-image":
+      copyImageToClipboard();
+      break;
+    case "fit":
+      setFit();
+      break;
+    case "actual":
+      setActual();
+      break;
+    case "zoom-in":
+      zoomBy(1.25);
+      break;
+    case "zoom-out":
+      zoomBy(0.8);
+      break;
+    case "fullscreen":
+      toggleFullscreen();
+      break;
+    case "info":
+      toggleInfo();
+      break;
+    case "settings":
+      openModal("settings-modal");
+      break;
+    case "about":
+      openModal("about-modal");
+      break;
+    default:
+      break;
+  }
+}
+
+function setupContextMenu() {
+  const menu = $("ctx-menu");
+  if (!menu) return;
+
+  menu.addEventListener("contextmenu", (event) => event.preventDefault());
+  menu.addEventListener("click", (event) => {
+    const item = event.target.closest(".ctx-item");
+    if (!item) return;
+    hideCtxMenu();
+    runCtxAction(item.dataset.action);
+  });
+  menu.addEventListener("keydown", (event) => {
+    const items = Array.from(menu.querySelectorAll(".ctx-item:not([hidden])"));
+    const index = items.indexOf(document.activeElement);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      items[(index + 1) % items.length].focus();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      items[(index - 1 + items.length) % items.length].focus();
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      if (document.activeElement) document.activeElement.click();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      hideCtxMenu();
+    }
+  });
+
+  // Substitui o menu nativo do webview (Edge/WebKit) pelo nosso.
+  document.addEventListener("contextmenu", (event) => {
+    if (event.target.closest("#ctx-menu")) {
+      event.preventDefault();
+      return;
+    }
+    if (state.current && event.target.closest("#stage")) {
+      event.preventDefault();
+      showCtxMenu(event.clientX, event.clientY);
+    }
+  });
+
+  document.addEventListener("mousedown", (event) => {
+    if (!state.ctxOpen) return;
+    if (!event.target.closest("#ctx-menu")) hideCtxMenu();
+  });
+
+  window.addEventListener("blur", hideCtxMenu);
+  window.addEventListener("resize", hideCtxMenu);
+
+  // Duplo clique esquerdo: alterna fit <-> 100%
+  $("viewport").addEventListener("dblclick", (event) => {
+    if (!state.current) return;
+    event.preventDefault();
+    if (state.fitMode) {
+      setActual();
+    } else {
+      setFit();
+    }
+  });
+}
+
 /* ---------------- modais ---------------- */
 
 function openModal(id) {
   const modal = $(id);
   if (!modal) return;
+  hideCtxMenu();
   state.modalOpen = id;
   modal.classList.remove("hidden");
   if (id === "settings-modal") {
@@ -972,7 +1218,10 @@ function setupDropEvents() {
 function setupKeyboard() {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      if (state.modalOpen) {
+      if (state.ctxOpen) {
+        hideCtxMenu();
+        event.preventDefault();
+      } else if (state.modalOpen) {
         closeModal(state.modalOpen);
         event.preventDefault();
       } else if (document.fullscreenElement) {
@@ -1083,6 +1332,7 @@ function setupPointerPan() {
     (event) => {
       if (!state.current) return;
       event.preventDefault();
+      hideCtxMenu();
       zoomBy(event.deltaY < 0 ? 1.12 : 1 / 1.12);
     },
     { passive: false },
@@ -1187,6 +1437,7 @@ function bindUi() {
   });
 
   setupPointerPan();
+  setupContextMenu();
 
   // Arquivo "abriu" mas o webview nao conseguiu decodificar (corrompido/nao suportado).
   $("viewer-img").addEventListener("error", () => {

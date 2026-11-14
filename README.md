@@ -47,6 +47,11 @@ Os instaladores também ficam na pasta local [`dist/`](dist/README.md) após o b
 |---|---|
 | ![Associações](docs/images/installer-associations.png) | ![Boas-vindas](docs/images/installer-welcome.png) |
 
+| Menu de contexto próprio (botão direito) |
+|---|
+| ![Menu de contexto](docs/images/context-menu.png) |
+
+
 
 ---
 
@@ -57,6 +62,8 @@ Os instaladores também ficam na pasta local [`dist/`](dist/README.md) após o b
 - **Navegação** próximo/anterior na pasta com ordenação natural (`frame_2` antes de `frame_10`) e setas do teclado.
 - **Prefetch bidirecional** de bytes (janela ±N, LRU, teto configurável de memória, default 128 MB).
 - **Controles de visualização**: zoom, pan, fit, 100%, fullscreen, checkerboard de transparência e fundos claro/escuro/cinza.
+- **Menu de contexto próprio** (botão direito sobre a imagem): abrir, abrir com… (Windows), mostrar na pasta, copiar caminho/imagem, zoom, fit/100%, tela cheia, informações, configurações e sobre — sem o menu nativo do webview.
+- **Duplo clique** alterna entre Fit e 100%.
 - **Sequências PNG/JPG (G7)**: detecção automática pelo nome do arquivo e reprodução em loop a **30 ou 60 fps**.
 - **Associações de arquivo opt-in**, desmarcadas por padrão; o app nunca “sequestra” formatos.
 - **Funil discreto** para o AVIFnim pago: modal único após a 5ª visualização + banner contextual em GIF/WebP.
