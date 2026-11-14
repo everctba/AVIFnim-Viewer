@@ -14,13 +14,14 @@
   color-scheme: dark;
 }
 
-html[data-theme="light"] {
+html[data-theme="light"],
+html[data-surface="light"] {
   --bg: #f4f4f7;
   --bg-elev: #ffffff;
   --bg-elev-2: #ececf1;
   --text: #1c1c22;
-  --muted: #66666f;
-  --border: #d8d8e0;
+  --muted: #5a5a66;
+  --border: #d3d3dd;
   color-scheme: light;
 }
 
@@ -174,12 +175,13 @@ body {
   padding: 36px 28px;
   border: 2px dashed var(--border);
   border-radius: 18px;
-  background: color-mix(in srgb, var(--bg-elev) 55%, transparent);
+  background: var(--bg-elev);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .18);
 }
 .dz-icon { color: var(--muted); margin-bottom: 10px; }
-.dz-inner h1 { font-size: 20px; margin: 0 0 8px; font-weight: 600; }
+.dz-inner h1 { font-size: 20px; margin: 0 0 8px; font-weight: 600; color: var(--text); }
 .dz-inner p { margin: 0 0 20px; color: var(--muted); }
-.dz-inner .hint { margin: 16px 0 0; font-size: 12px; opacity: .8; }
+.dz-inner .hint { margin: 16px 0 0; font-size: 12px; color: var(--muted); opacity: .9; }
 .dropzone.dragover .dz-inner { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-elev)); }
 
 /* ---------- Viewer ---------- */

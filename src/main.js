@@ -376,13 +376,16 @@ function applyI18n() {
 function applyTheme() {
   const pref = state.settings.theme;
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const dark = pref === "dark" || (pref === "auto" && systemDark);
+  const surfaceLight = state.settings.background === "light";
+  const dark = !surfaceLight && (pref === "dark" || (pref === "auto" && systemDark));
   document.documentElement.dataset.theme = dark ? "dark" : "light";
   invoke("set_window_theme", { dark }).catch(() => {});
 }
 
 function applyBackground() {
   const stage = $("stage");
+  // "modo branco" (fundo claro) tambem deixa o chrome/toolbar claros
+  document.documentElement.dataset.surface = state.settings.background === "light" ? "light" : "";
   ["dark", "light", "gray"].forEach((bg) => stage.classList.toggle("bg-" + bg, state.settings.background === bg));
   stage.classList.toggle("checker", !!state.settings.checkerboard);
 }

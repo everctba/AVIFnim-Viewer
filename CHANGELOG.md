@@ -17,6 +17,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Menu nativo do webview suprimido**: sem imagem carregada não aparece nenhum menu; com imagem,
   o botão direito abre o menu do AVIFnim Viewer (campos de texto mantêm o menu nativo de copiar/colar).
 - **Sem borda/anel branco de foco** ao redor do visualizador (o foco visível continua nos botões).
+- **Modo branco (fundo claro) coeso**: toolbar/barra inferior e cartões passam a claros com ícones e
+  textos escuros, e a tela vazia ganhou contraste (card sólido em vez de translúcido).
 
 > Build de teste do Windows para validação visual; a versão final multiplataforma será
 > reconstruída após o feedback (Linux/macOS ainda em 0.1.1 até lá).
