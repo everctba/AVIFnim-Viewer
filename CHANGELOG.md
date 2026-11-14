@@ -5,6 +5,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ## [0.1.1] — 2026-11-13
 
+**Download:** [GitHub Releases — v0.1.1](https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.1)
+
 ### Adicionado
 
 - **Menu de contexto próprio sobre a imagem** (substitui o menu nativo do webview):

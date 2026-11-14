@@ -1,6 +1,9 @@
 # Status do projeto — AVIFnim Viewer v1.0
 
-**Data:** 2026-11-13 · **Release:** [v0.1.0](https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.0)
+**Data:** 2026-11-13 · **Release:** [v0.1.1](https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.1)
+
+> v0.1.1 adiciona o menu de contexto próprio sobre a imagem, duplo clique Fit/100%,
+> prefetch padrão 3 e checkerboard desligado por padrão.
 
 ## Entregue
 
@@ -11,6 +14,7 @@
 | PPM/PNM P1–P6 (8/16-bit) → PNG | ✅ | 11 testes unitários + PPM 4K em 1,7 s |
 | Navegação natural + prefetch LRU 128 MB | ✅ | testes + uso real |
 | Zoom/pan/fit/100%/fullscreen/checkerboard/fundos | ✅ | screenshots e atalhos |
+| Menu de contexto próprio + duplo clique Fit/100% | ✅ | screenshot `context-menu.png`; teste automatizado de duplo clique |
 | Sequências PNG/JPG 30/60 fps (G7) | ✅ | 56,4 fps medidos; barra de sequência |
 | i18n PT-BR/EN-US + tema claro/escuro/sistema | ✅ | screenshot `viewer-light-en.png` |
 | Associações opt-in + uninstall cleanup | ✅ | instalador custom + job `installer-test` no CI |

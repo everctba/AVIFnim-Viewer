@@ -11,9 +11,9 @@ stills/sequências **PPM/PNM** para Windows, macOS e Linux — construído com *
 
 | Plataforma | Artefato |
 |---|---|
-| **Windows 10/11 x64** | [Instalador NSIS (v0.1.0)](https://github.com/everctba/AVIFnim-Viewer/releases/download/v0.1.0/AVIFnim.Viewer_0.1.0_x64-setup.exe) |
-| **Linux x64** | [`.deb` (v0.1.0)](https://github.com/everctba/AVIFnim-Viewer/releases/download/v0.1.0/AVIFnim.Viewer_0.1.0_amd64.deb) — Ubuntu 24.04+/Mint, WebKitGTK 4.1 |
-| **macOS 13+** | [`.dmg` universal (v0.1.0)](https://github.com/everctba/AVIFnim-Viewer/releases/download/v0.1.0/AVIFnim.Viewer_0.1.0_universal.dmg) — Intel + Apple Silicon, gerado no CI (`macos-latest`) |
+| **Windows 10/11 x64** | [Instalador NSIS (v0.1.1)](https://github.com/everctba/AVIFnim-Viewer/releases/download/v0.1.1/AVIFnim.Viewer_0.1.1_x64-setup.exe) |
+| **Linux x64** | [`.deb` (v0.1.1)](https://github.com/everctba/AVIFnim-Viewer/releases/download/v0.1.1/AVIFnim.Viewer_0.1.1_amd64.deb) — Ubuntu 24.04+/Mint, WebKitGTK 4.1 |
+| **macOS 13+** | [`.dmg` universal (v0.1.1)](https://github.com/everctba/AVIFnim-Viewer/releases/download/v0.1.1/AVIFnim.Viewer_0.1.1_universal.dmg) — Intel + Apple Silicon, gerado no CI (`macos-latest`) |
 
 Página de releases com todos os arquivos: https://github.com/everctba/AVIFnim-Viewer/releases/latest
 Sem assinatura de código / notarização nesta versão (decisões pendentes).
@@ -24,7 +24,7 @@ Os instaladores também ficam na pasta local [`dist/`](dist/README.md) após o b
 
 **Instalação:**
 - Windows: execute o instalador NSIS (SmartScreen pode pedir confirmação).
-- Linux: `sudo apt install ./AVIFnim.Viewer_0.1.0_amd64.deb`
+- Linux: `sudo apt install ./AVIFnim.Viewer_0.1.1_amd64.deb`
 - macOS: abra o `.dmg`, arraste o app para Applications; sem notarização, use "Abrir" no menu de contexto na primeira vez.
 
 > **Por que existe:** os visualizadores nativos dos sistemas costumam abrir AVIF, mas **não

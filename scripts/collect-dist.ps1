@@ -8,7 +8,7 @@ $root = Split-Path $PSScriptRoot -Parent
 $dist = Join-Path $root 'dist'
 New-Item -ItemType Directory -Force -Path $dist | Out-Null
 
-$version = '0.1.0'
+$version = '0.1.1'
 $releaseBase = "https://github.com/everctba/AVIFnim-Viewer/releases/download/v$version"
 
 # Windows (build local)
