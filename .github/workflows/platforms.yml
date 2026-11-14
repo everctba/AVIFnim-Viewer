@@ -58,6 +58,51 @@ jobs:
           path: src-tauri/target/release/bundle/deb/*.deb
           if-no-files-found: error
 
+  linux-runtime:
+    name: Linux runtime smoke test (Xvfb + .deb)
+    runs-on: ubuntu-22.04
+    needs: linux-deb
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download .deb artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-deb
+          path: dist
+
+      - name: Install system dependencies + Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            xvfb
+
+      - name: Install the .deb package
+        run: |
+          sudo apt-get install -y ./dist/*.deb
+          dpkg -L avi-fnim-viewer | head -20 || true
+
+      - name: Run app headless with an animated image
+        run: |
+          export WEBKIT_DISABLE_COMPOSITING_MODE=1
+          export WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
+          set +e
+          timeout 15 xvfb-run -a avifnim-viewer tests/assets/anim.gif > runtime.log 2>&1
+          code=$?
+          set -e
+          echo "exit code: $code"
+          cat runtime.log | tail -40
+          if [ "$code" -ne 124 ]; then
+            echo "App encerrou antes do timeout (code=$code) — esperado 124 (rodando)."
+            exit 1
+          fi
+          echo "OK: app rodou 15s sem crash no Linux."
+
   macos-dmg:
     name: macOS universal .dmg (macos-13)
     runs-on: macos-13
