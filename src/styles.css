@@ -26,6 +26,21 @@ html[data-theme="light"] {
 
 * { box-sizing: border-box; }
 
+/* Remove a borda/anel branco de foco do visualizador (acessibilidade fica nos botoes) */
+#stage,
+#stage:focus,
+#stage:focus-visible,
+#viewport,
+#viewport:focus,
+#viewport:focus-visible,
+#viewer-img,
+#viewer-img:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+html:focus, body:focus, .app:focus { outline: none !important; }
+
 html, body { height: 100%; }
 
 body {
