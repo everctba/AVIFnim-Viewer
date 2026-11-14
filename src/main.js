@@ -1049,6 +1049,20 @@ function setupContextMenu() {
   });
 }
 
+function setupFullscreenMode() {
+  document.addEventListener("fullscreenchange", () => {
+    const active = !!document.fullscreenElement;
+    document.body.classList.toggle("fs-mode", active);
+    if (active) {
+      hideCtxMenu();
+      $("info-panel").classList.add("hidden");
+      $("banner").classList.add("hidden");
+      $("stage").classList.remove("busy");
+    }
+    applyView();
+  });
+}
+
 /* ---------------- modais ---------------- */
 
 function openModal(id) {
@@ -1438,6 +1452,7 @@ function bindUi() {
 
   setupPointerPan();
   setupContextMenu();
+  setupFullscreenMode();
 
   // Arquivo "abriu" mas o webview nao conseguiu decodificar (corrompido/nao suportado).
   $("viewer-img").addEventListener("error", () => {

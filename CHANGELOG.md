@@ -8,6 +8,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 ### Alterado
 
 - **Novo ícone do aplicativo** (design do owner, `icone.png` → ícones Windows/macOS/Linux).
+- **Modo tela cheia**: fundo 100% preto, barra de ferramentas oculta — apenas a imagem
+  (Esc ou F para sair).
 
 > Build de teste do Windows para validação visual; a versão final multiplataforma será
 > reconstruída após o feedback (Linux/macOS ainda em 0.1.1 até lá).

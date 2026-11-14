@@ -374,6 +374,25 @@ body {
 }
 .ctx-item[hidden] { display: none; }
 
+/* Fullscreen: apenas a imagem, fundo 100% preto e sem barra de ferramentas */
+body.fs-mode { background: #000 !important; }
+body.fs-mode .toolbar { display: none !important; }
+body.fs-mode .stage,
+body.fs-mode .stage.checker {
+  background: #000 !important;
+  background-image: none !important;
+}
+body.fs-mode .stage { inset: 0; }
+body.fs-mode .banner,
+body.fs-mode .seq-bar,
+body.fs-mode .info-panel { display: none !important; }
+body.fs-mode .dropzone { background: #000; }
+body.fs-mode .dropzone .dz-inner {
+  background: transparent;
+  border-color: #2a2a2a;
+}
+body.fs-mode .viewer-img { background: transparent; }
+
 .hidden { display: none !important; }
 
 /* Busy state */
