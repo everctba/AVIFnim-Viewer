@@ -1,10 +1,21 @@
 # AVIFnim Viewer
 
 [![Download](https://img.shields.io/github/v/release/everctba/AVIFnim-Viewer?label=download&color=7c5cff)](https://github.com/everctba/AVIFnim-Viewer/releases/latest)
+[![CI](https://github.com/everctba/AVIFnim-Viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/everctba/AVIFnim-Viewer/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Visualizador **gratuito e open source (MIT)** de imagens animadas **AVIF, WebP e GIF** e de
 stills/sequências **PPM/PNM** para Windows, macOS e Linux — construído com **Tauri 2 + Rust**.
+
+## Download
+
+| Plataforma | Artefato |
+|---|---|
+| **Windows 10/11 x64** | [Instalador NSIS (v0.1.0)](https://github.com/everctba/AVIFnim-Viewer/releases/latest) |
+| **Linux x64** | `.deb` gerado no CI (`ubuntu-22.04`, WebKitGTK 4.1) — anexado ao release |
+| **macOS 13+** | `.dmg` universal gerado no CI (`macos-13`) — anexado ao release |
+
+Sem assinatura de código / notarização nesta versão (decisões pendentes).
 
 > **Por que existe:** os visualizadores nativos dos sistemas costumam abrir AVIF, mas **não
 > animam** (no Windows, o Fotos mostra só o primeiro frame); e PPM/PNM não é suportado por
