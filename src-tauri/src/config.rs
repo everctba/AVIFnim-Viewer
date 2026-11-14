@@ -36,7 +36,7 @@ impl Default for Settings {
             associations.insert(key.to_string(), false);
         }
         Self {
-            theme: "auto".into(),
+            theme: "dark".into(),
             lang: "pt".into(),
             prefetch_n: 3,
             prefetch_mb: 128,
@@ -55,8 +55,9 @@ impl Default for Settings {
 
 impl Settings {
     pub fn normalized(mut self) -> Self {
-        if !matches!(self.theme.as_str(), "auto" | "light" | "dark") {
-            self.theme = "auto".into();
+        // Somente dois estados de tema: light | dark (auto/valores antigos viram dark).
+        if self.theme != "light" && self.theme != "dark" {
+            self.theme = "dark".into();
         }
         if !matches!(self.lang.as_str(), "pt" | "en") {
             self.lang = "pt".into();

@@ -16,7 +16,7 @@
 | Zoom/pan/fit/100%/fullscreen/checkerboard/fundos | ✅ | screenshots e atalhos |
 | Menu de contexto próprio + duplo clique Fit/100% | ✅ | screenshot `context-menu.png`; teste automatizado de duplo clique |
 | Sequências PNG/JPG 30/60 fps (G7) | ✅ | 56,4 fps medidos; barra de sequência |
-| i18n PT-BR/EN-US + tema claro/escuro/sistema | ✅ | screenshot `viewer-light-en.png` |
+| i18n PT-BR/EN-US + tema claro/escuro (2 estados) | ✅ | screenshots dos dois temas |
 | Associações opt-in + uninstall cleanup | ✅ | instalador custom + job `installer-test` no CI |
 | Funil AVIFnim (modal 5ª visualização + banner) | ✅ | screenshot `promo.png` |
 | Sobre com AVIF animado | ✅ | `about.png` |

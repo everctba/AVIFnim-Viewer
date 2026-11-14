@@ -10,7 +10,7 @@ const listen = TAURI.event ? TAURI.event.listen : async () => () => {};
 const getCurrentWebview = TAURI.webview ? TAURI.webview.getCurrentWebview : () => null;
 
 const SEQ_EXTS = ["png", "jpg", "jpeg"];
-const BG_ORDER = ["dark", "light", "gray"];
+
 const PRELOAD_AHEAD = 12;
 const SEQ_BUFFER_MAX = 48;
 
@@ -40,7 +40,7 @@ const I18N = {
     "toolbar.fit": "Fit",
     "toolbar.actual": "Tamanho real (100%)",
     "toolbar.fullscreen": "Tela cheia (F)",
-    "toolbar.background": "Alternar fundo",
+    "toolbar.background": "Alternar tema claro/escuro",
     "toolbar.checker": "Checkerboard de transparência",
     "toolbar.info": "Informações (I)",
     "toolbar.settings": "Configurações",
@@ -160,7 +160,7 @@ const I18N = {
     "toolbar.fit": "Fit",
     "toolbar.actual": "Actual size (100%)",
     "toolbar.fullscreen": "Fullscreen (F)",
-    "toolbar.background": "Cycle background",
+    "toolbar.background": "Toggle light/dark theme",
     "toolbar.checker": "Transparency checkerboard",
     "toolbar.info": "Info (I)",
     "toolbar.settings": "Settings",
@@ -374,20 +374,18 @@ function applyI18n() {
 }
 
 function applyTheme() {
-  const pref = state.settings.theme;
-  const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const surfaceLight = state.settings.background === "light";
-  const dark = !surfaceLight && (pref === "dark" || (pref === "auto" && systemDark));
+  // Somente dois estados: light | dark. O tema controla a interface inteira,
+  // incluindo o fundo da área de imagem (sem branco na versão dark).
+  const dark = state.settings.theme !== "light";
   document.documentElement.dataset.theme = dark ? "dark" : "light";
-  invoke("set_window_theme", { dark }).catch(() => {});
-}
-
-function applyBackground() {
   const stage = $("stage");
-  // "modo branco" (fundo claro) tambem deixa o chrome/toolbar claros
-  document.documentElement.dataset.surface = state.settings.background === "light" ? "light" : "";
-  ["dark", "light", "gray"].forEach((bg) => stage.classList.toggle("bg-" + bg, state.settings.background === bg));
-  stage.classList.toggle("checker", !!state.settings.checkerboard);
+  if (stage) {
+    stage.classList.toggle("bg-dark", dark);
+    stage.classList.toggle("bg-light", !dark);
+    stage.classList.remove("bg-gray");
+    stage.classList.toggle("checker", !!state.settings.checkerboard);
+  }
+  invoke("set_window_theme", { dark }).catch(() => {});
 }
 
 /* ---------------- bootstrap ---------------- */
@@ -397,12 +395,10 @@ document.addEventListener("DOMContentLoaded", init);
 async function init() {
   bindUi();
   applyTheme();
-  applyBackground();
   await loadSettings();
   state.bench = await invoke("bench_mode").catch(() => false);
   applyI18n();
   applyTheme();
-  applyBackground();
   fillSettingsForm();
   applyView();
   await loadAppInfo();
@@ -1141,9 +1137,8 @@ function fillAbout() {
 
 function fillSettingsForm() {
   const s = state.settings;
-  $("set-theme").value = s.theme;
+  $("set-theme").value = s.theme === "light" ? "light" : "dark";
   $("set-lang").value = s.lang;
-  $("set-background").value = s.background;
   $("set-checker").checked = !!s.checkerboard;
   $("set-tips").checked = !!s.show_tips;
   $("set-reset-view").checked = s.reset_view_on_navigate !== false;
@@ -1173,14 +1168,12 @@ async function loadAssociationStates() {
 async function persistSettings(patch) {
   state.settings = Object.assign({}, state.settings, patch || {});
   applyTheme();
-  applyBackground();
   applyI18n();
   try {
     const saved = await invoke("save_settings", { settings: state.settings });
     if (saved && typeof saved === "object") state.settings = saved;
     fillSettingsForm();
     applyTheme();
-    applyBackground();
     $("settings-saved").textContent = t("settings.saved");
   } catch (err) {
     toast(t("toast.saveFail"));
@@ -1409,8 +1402,7 @@ function bindUi() {
   $("btn-info").addEventListener("click", toggleInfo);
   $("btn-info-close").addEventListener("click", () => $("info-panel").classList.add("hidden"));
   $("btn-bg").addEventListener("click", () => {
-    const i = BG_ORDER.indexOf(state.settings.background);
-    persistSettings({ background: BG_ORDER[(i + 1) % BG_ORDER.length] });
+    persistSettings({ theme: state.settings.theme === "light" ? "dark" : "light" });
   });
   $("btn-checker").addEventListener("click", () => persistSettings({ checkerboard: !state.settings.checkerboard }));
   $("btn-settings").addEventListener("click", () => openModal("settings-modal"));
@@ -1443,7 +1435,6 @@ function bindUi() {
 
   $("set-theme").addEventListener("change", (event) => persistSettings({ theme: event.target.value }));
   $("set-lang").addEventListener("change", (event) => persistSettings({ lang: event.target.value }));
-  $("set-background").addEventListener("change", (event) => persistSettings({ background: event.target.value }));
   $("set-checker").addEventListener("change", (event) => persistSettings({ checkerboard: event.target.checked }));
   $("set-tips").addEventListener("change", (event) => persistSettings({ show_tips: event.target.checked }));
   $("set-reset-view").addEventListener("change", (event) =>

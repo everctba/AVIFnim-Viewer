@@ -67,7 +67,7 @@ Os instaladores também ficam na pasta local [`dist/`](dist/README.md) após o b
 - **Sequências PNG/JPG (G7)**: detecção automática pelo nome do arquivo e reprodução em loop a **30 ou 60 fps**.
 - **Associações de arquivo opt-in**, desmarcadas por padrão; o app nunca “sequestra” formatos.
 - **Funil discreto** para o AVIFnim pago: modal único após a 5ª visualização + banner contextual em GIF/WebP.
-- **PT-BR e EN-US**, tema claro/escuro/sistema, atalhos de teclado e acessibilidade (foco visível, ARIA, contraste AA).
+- **PT-BR e EN-US**, tema **claro ou escuro** (interface inteira acompanha), atalhos de teclado e acessibilidade (foco visível, ARIA, contraste AA).
 - **Sem telemetria**, sem contas, sem nuvem.
 
 ## Formatos suportados

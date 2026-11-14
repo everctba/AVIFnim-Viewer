@@ -19,6 +19,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Sem borda/anel branco de foco** ao redor do visualizador (o foco visível continua nos botões).
 - **Modo branco (fundo claro) coeso**: toolbar/barra inferior e cartões passam a claros com ícones e
   textos escuros, e a tela vazia ganhou contraste (card sólido em vez de translúcido).
+- **Tema com apenas 2 estados (Claro/Escuro)**: removido “Seguir o sistema” e o fundo independente
+  (cinza); o tema controla a interface inteira, incluindo o fundo da área da imagem — no dark a barra
+  fica escura. O botão de tema na barra inferior alterna Claro ↔ Escuro.
 
 > Build de teste do Windows para validação visual; a versão final multiplataforma será
 > reconstruída após o feedback (Linux/macOS ainda em 0.1.1 até lá).

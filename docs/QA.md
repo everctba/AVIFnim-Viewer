@@ -39,7 +39,7 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | Instância única + abrir por argumento | segunda instância envia arquivo para a janela existente | ✅ testado |
 | Drag & drop | arquivo abre ao soltar na janela | ✅ implementado (evento Tauri) |
 | Idioma EN-US | troca sem reiniciar, textos completos | ✅ testado ([viewer-light-en.png](images/viewer-light-en.png)) |
-| Tema claro | UI clara + title bar nativa clara | ✅ testado (mesma captura) |
+| Tema claro/escuro (2 estados) | interface inteira acompanha; barra escura no dark e clara no light | ✅ testado (capturas dos dois temas) |
 
 ## Segurança / robustez
 
