@@ -40,8 +40,9 @@ body {
 
 .app { display: flex; flex-direction: column; height: 100vh; }
 
-/* ---------- Toolbar ---------- */
+/* ---------- Toolbar (fixa em baixo) ---------- */
 .toolbar {
+  order: 2;
   height: var(--toolbar-h);
   min-height: var(--toolbar-h);
   display: flex;
@@ -49,8 +50,10 @@ body {
   gap: 12px;
   padding: 0 10px;
   background: var(--bg-elev);
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
 }
+
+.app > .stage { order: 1; }
 
 .tb-group { display: flex; align-items: center; gap: 6px; }
 .tb-left { flex: 1 1 auto; min-width: 0; }
@@ -317,7 +320,7 @@ body {
 
 /* Toast */
 .toast {
-  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+  position: fixed; left: 50%; bottom: calc(var(--toolbar-h) + 16px); transform: translateX(-50%);
   z-index: 90;
   background: var(--bg-elev-2);
   color: var(--text);
@@ -377,6 +380,7 @@ body {
 /* Fullscreen: apenas a imagem, fundo 100% preto e sem barra de ferramentas */
 body.fs-mode { background: #000 !important; }
 body.fs-mode .toolbar { display: none !important; }
+body.fs-mode .toast { bottom: 22px; }
 body.fs-mode .stage,
 body.fs-mode .stage.checker {
   background: #000 !important;

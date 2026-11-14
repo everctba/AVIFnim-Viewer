@@ -858,12 +858,25 @@ function showCtxMenu(clientX, clientY) {
   const menu = $("ctx-menu");
   if (!menu || !state.current) return;
   menu.classList.remove("hidden");
+  menu.style.maxHeight = "";
+  menu.style.overflowY = "";
   state.ctxOpen = true;
+
+  const gap = 4;
   const rect = menu.getBoundingClientRect();
-  const left = Math.max(8, Math.min(clientX, window.innerWidth - rect.width - 8));
-  const top = Math.max(8, Math.min(clientY, window.innerHeight - rect.height - 8));
-  menu.style.left = left + "px";
-  menu.style.top = top + "px";
+  // Abre sempre para baixo/direita do clique (nunca "sobe" para cima do cursor).
+  let left = clientX + gap;
+  let top = clientY + gap;
+  if (left + rect.width > window.innerWidth - 8) {
+    left = window.innerWidth - rect.width - 8;
+  }
+  if (top + rect.height > window.innerHeight - 8) {
+    // Falta espaco abaixo: mantem o topo no clique e rola o menu internamente.
+    menu.style.maxHeight = Math.max(160, window.innerHeight - top - 8) + "px";
+    menu.style.overflowY = "auto";
+  }
+  menu.style.left = Math.max(8, left) + "px";
+  menu.style.top = Math.max(8, top) + "px";
   const first = menu.querySelector(".ctx-item:not([hidden])");
   if (first) first.focus();
 }
@@ -872,6 +885,8 @@ function hideCtxMenu() {
   const menu = $("ctx-menu");
   if (!menu || menu.classList.contains("hidden")) return;
   menu.classList.add("hidden");
+  menu.style.maxHeight = "";
+  menu.style.overflowY = "";
   state.ctxOpen = false;
 }
 
