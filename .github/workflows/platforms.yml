@@ -104,8 +104,8 @@ jobs:
           echo "OK: app rodou 15s sem crash no Linux."
 
   macos-dmg:
-    name: macOS universal .dmg (macos-13)
-    runs-on: macos-13
+    name: macOS universal .dmg (macos-latest)
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
