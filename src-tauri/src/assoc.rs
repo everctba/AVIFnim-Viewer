@@ -88,8 +88,8 @@ mod win {
                 .map_err(|e| format!("Falha ao acessar HKCU\\Software\\Classes: {e}"))?;
             let _ = classes.delete_subkey_all(&progid);
             for ext in exts {
-                if let Ok(open_with) =
-                    classes.open_subkey_with_flags(format!(".{ext}\\OpenWithProgids"), KEY_ALL_ACCESS)
+                if let Ok(open_with) = classes
+                    .open_subkey_with_flags(format!(".{ext}\\OpenWithProgids"), KEY_ALL_ACCESS)
                 {
                     let _ = open_with.delete_value(&progid);
                 }
@@ -161,7 +161,10 @@ mod other {
     }
 
     pub fn set_association(_group: &str, _enabled: bool) -> Result<bool, String> {
-        Err("Associacoes de arquivo sao gerenciadas pelo sistema operacional nesta plataforma".into())
+        Err(
+            "Associacoes de arquivo sao gerenciadas pelo sistema operacional nesta plataforma"
+                .into(),
+        )
     }
 
     pub fn avifnim_installed() -> bool {
@@ -193,4 +196,3 @@ mod tests {
         }
     }
 }
-

@@ -97,7 +97,8 @@ pub fn load(dir: &Path) -> Settings {
 }
 
 pub fn save(dir: &Path, settings: &Settings) -> Result<(), String> {
-    std::fs::create_dir_all(dir).map_err(|e| format!("Falha ao criar pasta de configuracao: {e}"))?;
+    std::fs::create_dir_all(dir)
+        .map_err(|e| format!("Falha ao criar pasta de configuracao: {e}"))?;
     let path = settings_path(dir);
     let tmp = path.with_extension("json.tmp");
     let raw = serde_json::to_string_pretty(settings)

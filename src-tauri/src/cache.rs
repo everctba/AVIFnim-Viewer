@@ -69,13 +69,7 @@ impl Cache {
         }
         self.tick = self.tick.wrapping_add(1);
         let tick = self.tick;
-        if let Some(old) = self.map.insert(
-            key,
-            Entry {
-                data,
-                last: tick,
-            },
-        ) {
+        if let Some(old) = self.map.insert(key, Entry { data, last: tick }) {
             self.bytes = self.bytes.saturating_sub(old.data.len());
         }
         self.bytes += size;
@@ -122,7 +116,10 @@ mod tests {
         let mut cache = Cache::new(10);
         put(&mut cache, "a", 6);
         put(&mut cache, "b", 6);
-        assert!(!cache.contains("a"), "o item mais antigo deveria ter sido evictado");
+        assert!(
+            !cache.contains("a"),
+            "o item mais antigo deveria ter sido evictado"
+        );
         assert!(cache.contains("b"));
         assert!(cache.total_bytes() <= 10);
     }
@@ -134,7 +131,10 @@ mod tests {
         put(&mut cache, "b", 4);
         assert!(cache.get("a").is_some());
         put(&mut cache, "c", 4);
-        assert!(cache.contains("a"), "a foi tocado recentemente e deve ficar");
+        assert!(
+            cache.contains("a"),
+            "a foi tocado recentemente e deve ficar"
+        );
         assert!(cache.contains("c"));
         assert!(!cache.contains("b"), "b era o menos usado recentemente");
         assert!(cache.total_bytes() <= 10);
@@ -157,4 +157,3 @@ mod tests {
         assert_eq!(cache.total_bytes(), 0);
     }
 }
-

@@ -205,7 +205,9 @@ fn load_image(path: String, state: tauri::State<'_, AppState>) -> Result<ImageDa
     } else {
         (bytes.as_ref().clone(), mime_for(&ext).to_string(), 0, 0)
     };
-    let size = std::fs::metadata(&file).map(|m| m.len()).unwrap_or(payload.len() as u64);
+    let size = std::fs::metadata(&file)
+        .map(|m| m.len())
+        .unwrap_or(payload.len() as u64);
     let data_url = format!("data:{};base64,{}", mime, b64(&payload));
     Ok(ImageData {
         path: file.to_string_lossy().into_owned(),
@@ -261,11 +263,7 @@ fn clear_cache(state: tauri::State<'_, AppState>) {
 
 #[tauri::command]
 fn get_settings(state: tauri::State<'_, AppState>) -> Settings {
-    state
-        .settings
-        .lock()
-        .map(|s| s.clone())
-        .unwrap_or_default()
+    state.settings.lock().map(|s| s.clone()).unwrap_or_default()
 }
 
 #[tauri::command]
@@ -485,7 +483,10 @@ mod tests {
     fn natural_sort_orders_frames() {
         let mut names = vec!["frame_10.png", "frame_2.png", "frame_1.png", "frame_02.png"];
         names.sort_by(|a, b| natural_cmp(a, b));
-        assert_eq!(names, vec!["frame_1.png", "frame_2.png", "frame_02.png", "frame_10.png"]);
+        assert_eq!(
+            names,
+            vec!["frame_1.png", "frame_2.png", "frame_02.png", "frame_10.png"]
+        );
     }
 
     #[test]
@@ -504,7 +505,11 @@ mod tests {
         let file = dir.join("foto.avif");
         std::fs::write(&file, b"x").unwrap();
         let expected = file.to_string_lossy().into_owned();
-        let args = vec!["avifnim-viewer.exe".to_string(), "--flag".to_string(), expected.clone()];
+        let args = vec![
+            "avifnim-viewer.exe".to_string(),
+            "--flag".to_string(),
+            expected.clone(),
+        ];
         assert_eq!(find_supported_arg(&args), Some(expected));
         let _ = std::fs::remove_file(&file);
     }
@@ -515,4 +520,3 @@ mod tests {
         assert_eq!(find_supported_arg(&args), None);
     }
 }
-

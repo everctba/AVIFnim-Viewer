@@ -170,7 +170,8 @@ mod tests {
 
     #[test]
     fn decodes_p2_grayscale_ascii() {
-        let (png, w, h) = decode_pnm_to_png(b"P2\n2 2\n255\n0 64 128 255\n").expect("P2 deve decodificar");
+        let (png, w, h) =
+            decode_pnm_to_png(b"P2\n2 2\n255\n0 64 128 255\n").expect("P2 deve decodificar");
         assert_eq!((w, h), (2, 2));
         assert!(png_magic_ok(&png));
     }
@@ -200,7 +201,9 @@ mod tests {
     fn decodes_p6_16bit_as_8bit_png() {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(b"P6\n2 2\n65535\n");
-        for value in [0u16, 65535, 32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64] {
+        for value in [
+            0u16, 65535, 32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64,
+        ] {
             bytes.extend_from_slice(&value.to_be_bytes());
         }
         let (png, w, h) = decode_pnm_to_png(&bytes).expect("P6 16-bit deve decodificar");
@@ -208,4 +211,3 @@ mod tests {
         assert!(png_magic_ok(&png));
     }
 }
-
