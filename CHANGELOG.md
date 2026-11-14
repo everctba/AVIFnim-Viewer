@@ -24,6 +24,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Configurações persistentes** (tema, idioma, prefetch, fundo, checkerboard, dicas, FPS).
 - **PT-BR/EN-US** e tema claro/escuro/sistema (inclusive title bar nativa).
 - **Associações de arquivo opt-in** por formato (desmarcadas), via registro do Windows (HKCU), sem sequestrar padrões.
+- **Instalador NSIS customizado**: página de associações opt-in (4 checkboxes desmarcados), escolha da pasta e suporte a `/ASSOC` para instalações silenciosas.
 - **Uninstall limpa as associações** criadas pelo app (hook NSIS `NSIS_HOOK_PREUNINSTALL`).
 - Opção de **resetar zoom/pan ao trocar de arquivo** (configurável, FR-05).
 - **Build Linux `.deb`** validado no CI (incluindo smoke test do app sob Xvfb) e publicado no release.

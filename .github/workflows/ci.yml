@@ -63,3 +63,34 @@ jobs:
 
       - name: Clippy
         run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+
+  installer-test:
+    name: Installer opt-in + uninstall
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install frontend tooling
+        run: npm ci
+
+      - name: Build NSIS installer
+        run: npx tauri build --bundles nsis
+
+      - name: Test installer (opt-in associations + uninstall)
+        shell: pwsh
+        run: ./scripts/test-installer.ps1

@@ -39,6 +39,11 @@ Sem assinatura de código / notarização nesta versão (decisões pendentes).
 |---|---|
 | ![Configurações](docs/images/settings.png) | ![Sobre](docs/images/about.png) |
 
+| Instalador — associações opt-in (desmarcadas) | Instalador — boas-vindas |
+|---|---|
+| ![Associações](docs/images/installer-associations.png) | ![Boas-vindas](docs/images/installer-welcome.png) |
+
+
 ---
 
 ## Recursos

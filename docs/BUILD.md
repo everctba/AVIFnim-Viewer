@@ -89,6 +89,25 @@ curl -X POST \
 Os artefatos ficam disponíveis em Actions → run → Artifacts. O `.deb` pode ser inspecionado com
 `dpkg-deb -I arquivo.deb` e instalado com `sudo apt install ./arquivo.deb`; o `.dmg` é aberto no macOS.
 
+### Instalador Windows (NSIS customizado)
+
+O instalador usa template próprio (`src-tauri/windows/installer.nsi`, baseado no template oficial do
+Tauri 2.12.4) + hooks (`src-tauri/windows/nsis-hooks.nsh`):
+
+- **Página de associações opt-in**: 4 checkboxes (AVIF, WebP, GIF, PPM/PNM) **desmarcados por padrão**.
+- **Escolha da pasta** na página de diretório (com fallback robusto para a pasta padrão).
+- **Uninstall** remove as associações criadas em `HKCU\Software\Classes`.
+- Opt-in silencioso para automação/CI: `/S /ASSOC=avif,webp,gif,pnm` (subconjunto) ou `/S /ASSOC` (todos).
+  Sem a flag, nada é registrado.
+
+```bash
+npx tauri build --bundles nsis
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-installer.ps1
+```
+
+> Ao atualizar a versão do Tauri CLI, revise o template customizado contra o template oficial da
+> mesma versão (os placeholders `{{...}}` mudam entre versões).
+
 ## Testes
 
 ```bash

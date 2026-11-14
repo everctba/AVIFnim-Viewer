@@ -50,7 +50,10 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | CSP restritiva / sem shell / sem conteúdo remoto | configuração do Tauri | ✅ revisão de código |
 | Sem telemetria / sem upload | somente leitura local | ✅ revisão de código |
 | Associações opt-in (registro HKCU) | só registra após o usuário marcar; remove ao desmarcar | ✅ teste unitário de roundtrip |
-| Uninstall remove associações | hook NSIS limpa ProgIDs e OpenWithProgids | ✅ testado: chaves simuladas + instalar/desinstalar → `HOOK NSIS OK` |
+| Instalador: página de associações opt-in | checkboxes desmarcados por padrão; seleção grava ProgIDs/OpenWithProgids | ✅ testado: página renderizada ([installer-associations.png](images/installer-associations.png)); `/ASSOC=avif` grava só AVIF; `/ASSOC` grava todos; sem flag não grava nada |
+| Instalador: escolha da pasta | página de diretório com pasta padrão preenchida e "Browse…" | ✅ corrigido fallback de `$INSTDIR` e validado no fluxo GUI |
+| Uninstall remove associações | hook NSIS limpa ProgIDs e OpenWithProgids | ✅ testado: 3 cenários de install/uninstall automatizados (`scripts/test-installer.ps1`) |
+| Instalador no CI | build + testes de opt-in/uninstall automáticos | ✅ job `installer-test` no `ci.yml` |
 
 ## Plataformas
 
