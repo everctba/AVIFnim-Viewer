@@ -3,6 +3,15 @@
 Todas as mudanças notáveis deste projeto são documentadas aqui.
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.1.2] — 2026-11-13
+
+### Alterado
+
+- **Novo ícone do aplicativo** (design do owner, `icone.png` → ícones Windows/macOS/Linux).
+
+> Build de teste do Windows para validação visual; a versão final multiplataforma será
+> reconstruída após o feedback (Linux/macOS ainda em 0.1.1 até lá).
+
 ## [0.1.1] — 2026-11-13
 
 **Download:** [GitHub Releases — v0.1.1](https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.1)

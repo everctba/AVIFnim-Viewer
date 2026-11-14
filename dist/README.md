@@ -1,37 +1,33 @@
-# AVIFnim Viewer 0.1.1 — instaladores
+# AVIFnim Viewer — instaladores locais
 
-Artefatos gerados para a release **v0.1.1** (mesmos arquivos publicados em
-https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.1).
+Pasta de artefatos locais (binários **não** versionados; README/checksums são).
+
+## Build de teste atual — Windows 0.1.2 (ícone novo)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
-| `AVIFnim.Viewer_0.1.1_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 1,32 MB | `d20b5cf4…8764` |
-| `AVIFnim.Viewer_0.1.1_amd64.deb` | Linux x64 (Ubuntu 24.04+/Mint, WebKitGTK 4.1) | 2,18 MB | `c1ed104c…b5f92` |
+| `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 1,34 MB | `599e2d65…f26d` |
+
+Este build **ainda não foi publicado** no GitHub: é para você validar o ícone novo
+(instalador, título da janela, barra de tarefas) e o menu de contexto/duplo clique.
+Quando o visual estiver aprovado, será feito o build final de **todas** as plataformas
+e a publicação da versão correspondente.
+
+## Release atual — v0.1.1 (Linux/macOS)
+
+| Arquivo | Plataforma | Tamanho | SHA-256 |
+|---|---|---|---|
+| `AVIFnim.Viewer_0.1.1_amd64.deb` | Linux x64 (Ubuntu 24.04+/Mint) | 2,18 MB | `c1ed104c…b5f92` |
 | `AVIFnim.Viewer_0.1.1_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 6,07 MB | `fc6857cf…86d10` |
 
-Verificação: `sha256sum -c SHA256SUMS.txt` (Linux/macOS) ou
-`Get-FileHash dist\arquivo -Algorithm SHA256` (Windows).
+Publicados em https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.1
 
-## Novidades da 0.1.1
+## Instalação e verificação
 
-- Menu de contexto próprio sobre a imagem (substitui o menu nativo do webview).
-- Duplo clique alterna Fit ↔ 100%.
-- Prefetch padrão 3 (antes 2) e checkerboard desligado por padrão (configurável).
-
-## Instalação
-
-- **Windows:** execute o instalador. O assistente tem a página opcional de associações
-  (tudo desmarcado) e permite escolher a pasta. Sem assinatura de código — o SmartScreen pode
-  pedir confirmação.
+- **Windows:** execute o instalador (página de associações desmarcada; pasta configurável).
 - **Linux:** `sudo apt install ./AVIFnim.Viewer_0.1.1_amd64.deb`
-- **macOS:** abra o `.dmg`, arraste o app para *Applications*. Sem notarização — na primeira vez,
-  clique com o botão direito → *Abrir*.
+- **macOS:** abra o `.dmg` e arraste o app; sem notarização — botão direito → *Abrir* na 1ª vez.
+- Checksums: `sha256sum -c SHA256SUMS.txt` ou `Get-FileHash` no PowerShell.
 
-Associações de arquivo **nunca** são alteradas sem ação do usuário (nem no instalador; opt-in pelas
-configurações do app ou pela página do instalador).
-
-## Observações
-
-- Esta pasta é ignorada pelo git (binários). Ela é recriada com:
-  `powershell -File scripts/collect-dist.ps1` (Windows) ou baixando da release.
-- Hashes conferem com os assets da release v0.1.1.
+Recriar esta pasta: `powershell -File scripts/collect-dist.ps1` (baixa da release) + copiar o
+instalador Windows do build local (`src-tauri/target/release/bundle/nsis`).
