@@ -46,10 +46,19 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | PNM com magic desconhecido | erro amigável | ✅ teste unitário |
 | PNM 0×0 | erro amigável | ✅ teste unitário |
 | Arquivo > 256 MB | recusa antes de ler | ✅ implementado |
-| Arquivo corrompido (AVIF/WebP/GIF) | erro amigável, app continua utilizável | ✅ testado: `corrupt-anim.avif` (e webp/gif truncados) exibem "Não foi possível decodificar este arquivo" com "Abrir outro", sem crash |
+| Arquivo corrompido (AVIF/WebP/GIF) | erro amigável, app continua utilizável | ✅ testado: `corrupt-anim.avif` (e webp/gif truncados) exibem "Não foi possível decodificar este arquivo" com "Abrir outro", sem crash (validado também no build instalado) |
 | CSP restritiva / sem shell / sem conteúdo remoto | configuração do Tauri | ✅ revisão de código |
 | Sem telemetria / sem upload | somente leitura local | ✅ revisão de código |
 | Associações opt-in (registro HKCU) | só registra após o usuário marcar; remove ao desmarcar | ✅ teste unitário de roundtrip |
+| Uninstall remove associações | hook NSIS limpa ProgIDs e OpenWithProgids | ✅ testado: chaves simuladas + instalar/desinstalar → `HOOK NSIS OK` |
+
+## Plataformas
+
+| Plataforma | Evidência |
+|---|---|
+| **Windows 10/11 x64** | build local + instalador NSIS testado (instala/roda/desinstala); release v0.1.0 publicado |
+| **Linux x64 (.deb)** | build verde no GitHub Actions (`ubuntu-22.04`, WebKitGTK 4.1); `.deb` validado: magic `!<arch>`, control `Package: avi-fnim-viewer`, `Version: 0.1.0`, `Architecture: amd64`, `Depends: libwebkit2gtk-4.1-0, libgtk-3-0`, data com `usr/bin/avifnim-viewer`, `.desktop` e ícones. Execução real em distro: pendente (sem Linux no ambiente local). |
+| **macOS 13+ (.dmg universal)** | build no GitHub Actions (`macos-13`, targets Intel + Apple Silicon) — acompanhando no workflow `platforms.yml`. Notarização pendente (`avifnim-xqo`). |
 
 ## Desempenho (benchmark)
 

@@ -24,6 +24,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Configurações persistentes** (tema, idioma, prefetch, fundo, checkerboard, dicas, FPS).
 - **PT-BR/EN-US** e tema claro/escuro/sistema (inclusive title bar nativa).
 - **Associações de arquivo opt-in** por formato (desmarcadas), via registro do Windows (HKCU), sem sequestrar padrões.
+- **Uninstall limpa as associações** criadas pelo app (hook NSIS `NSIS_HOOK_PREUNINSTALL`).
+- Opção de **resetar zoom/pan ao trocar de arquivo** (configurável, FR-05).
 - **Funil AVIFnim**: modal único após a 5ª visualização + banner contextual em GIF/WebP.
 - **Sobre** com autor, links, banner do AVIFnim e limitações conhecidas.
 - **Robustez**: mensagens amigáveis para arquivos corrompidos/headers inválidos/dimensões absurdas.
