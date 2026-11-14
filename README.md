@@ -52,6 +52,17 @@ stills/sequências **PPM/PNM** para Windows, macOS e Linux — construído com *
 - **Sem pause/seek/frame step** na v1 (loop-only) — decoder próprio fica para o v2.
 - Não abre vídeo, HEIC, JXL, RAW, PSD.
 
+## Benchmark (Windows 10, release)
+
+| Métrica | Resultado |
+|---|---|
+| Startup (janela criada) | 30–78 ms (avg 60 ms) |
+| Abrir AVIF 5,38 MB (2400×1350) | 258 ms até o primeiro paint |
+| Abrir AVIF 1080p 3,44 MB | 180 ms |
+| Sequência PNG 12 frames | 56,4 fps medidos |
+
+Reprodução: `scripts\bench-startup.ps1` e modo `AVIFNIM_BENCH=1` (detalhes em `docs/QA.md`).
+
 ## Desenvolvimento
 
 ### Pré-requisitos (Windows)

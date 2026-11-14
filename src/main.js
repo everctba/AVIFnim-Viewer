@@ -252,6 +252,9 @@ const state = {
   dragStart: null,
   modalOpen: null,
   toastTimer: null,
+  bench: false,
+  benchFrames: 0,
+  benchStart: 0,
 };
 
 /* ---------------- helpers ---------------- */
@@ -349,6 +352,7 @@ async function init() {
   applyTheme();
   applyBackground();
   await loadSettings();
+  state.bench = await invoke("bench_mode").catch(() => false);
   applyI18n();
   applyTheme();
   applyBackground();
@@ -429,6 +433,7 @@ async function openPath(path) {
 async function showCurrent() {
   const entry = state.siblings[state.index];
   if (!entry) return;
+  const startedAt = performance.now();
   setBusy(true);
   try {
     const data = await invoke("load_image", { path: entry.path });
@@ -451,11 +456,44 @@ async function showCurrent() {
       })
       .catch(() => {});
     setTimeout(updateInfo, 60);
+    if (state.bench) {
+      await whenImageReady(img);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          invoke("bench_log", {
+            line: JSON.stringify({
+              event: "first_paint",
+              file: data.path,
+              format: data.format,
+              size: data.size,
+              width: img.naturalWidth,
+              height: img.naturalHeight,
+              ms: Math.round(performance.now() - startedAt),
+            }),
+          }).catch(() => {});
+        });
+      });
+    }
   } catch (err) {
     showError(err);
   } finally {
     setBusy(false);
   }
+}
+
+function whenImageReady(img, timeoutMs = 5000) {
+  if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      resolve();
+    };
+    img.addEventListener("load", finish, { once: true });
+    img.addEventListener("error", finish, { once: true });
+    setTimeout(finish, timeoutMs);
+  });
 }
 
 function updateChrome() {
@@ -466,6 +504,7 @@ function updateChrome() {
     title.textContent = t("toolbar.noFile");
     badge.classList.add("hidden");
     document.title = "AVIFnim Viewer";
+    invoke("set_window_title", { title: "AVIFnim Viewer" }).catch(() => {});
     return;
   }
   title.textContent = cur.name;
@@ -477,6 +516,7 @@ function updateChrome() {
   else if (ext === "gif") badge.classList.add("gif");
   else if (["ppm", "pgm", "pbm", "pnm"].includes(ext)) badge.classList.add("pnm");
   document.title = cur.name + " — AVIFnim Viewer";
+  invoke("set_window_title", { title: cur.name + " — AVIFnim Viewer" }).catch(() => {});
 }
 
 function updateNavButtons() {
@@ -533,6 +573,25 @@ function startSequence(frames, startIndex) {
   updateSeqBar();
   fillSeqBuffer();
   seqTick();
+  if (state.bench) {
+    state.benchFrames = 0;
+    state.benchStart = performance.now();
+    const frameCount = frames.length;
+    setTimeout(() => {
+      if (!state.seq) return;
+      const elapsed = performance.now() - state.benchStart;
+      const fps = Math.round((state.benchFrames / (elapsed / 1000)) * 10) / 10;
+      invoke("bench_log", {
+        line: JSON.stringify({
+          event: "sequence_fps",
+          frames: frameCount,
+          played: state.benchFrames,
+          seconds: Math.round(elapsed / 100) / 10,
+          fps,
+        }),
+      }).catch(() => {});
+    }, 2000);
+  }
 }
 
 function updateSeqBar() {
@@ -553,6 +612,7 @@ function stopSequence() {
 function seqTick() {
   const seq = state.seq;
   if (!seq) return;
+  if (state.bench) state.benchFrames += 1;
   const path = seq.frames[seq.idx];
   const cached = state.seqBuffer.get(path);
   const img = $("viewer-img");

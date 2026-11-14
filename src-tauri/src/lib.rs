@@ -359,6 +359,33 @@ fn set_window_theme(window: tauri::WebviewWindow, dark: bool) {
     let _ = window.set_theme(Some(theme));
 }
 
+#[tauri::command]
+fn set_window_title(window: tauri::WebviewWindow, title: String) {
+    let _ = window.set_title(&title);
+}
+
+/// Modo de benchmark (ativado por AVIFNIM_BENCH=1): usado por scripts de medicao.
+#[tauri::command]
+fn bench_mode() -> bool {
+    std::env::var("AVIFNIM_BENCH")
+        .map(|value| value == "1" || value.eq_ignore_ascii_case("true"))
+        .unwrap_or(false)
+}
+
+/// Anexa uma linha JSON ao bench.log do app data (usado pelo modo de benchmark).
+#[tauri::command]
+fn bench_log(line: String, state: tauri::State<'_, AppState>) -> Result<(), String> {
+    use std::io::Write;
+    let path = state.data_dir.join("bench.log");
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&path)
+        .map_err(|e| format!("Falha ao abrir bench.log: {e}"))?;
+    writeln!(file, "{line}").map_err(|e| format!("Falha ao escrever bench.log: {e}"))?;
+    Ok(())
+}
+
 /// Ordenacao natural: frame_2 antes de frame_10.
 fn natural_cmp(a: &str, b: &str) -> std::cmp::Ordering {
     let av: Vec<char> = a.chars().collect();
@@ -426,7 +453,10 @@ pub fn run() {
             set_association,
             avifnim_installed,
             open_default_apps_settings,
-            set_window_theme
+            set_window_theme,
+            set_window_title,
+            bench_mode,
+            bench_log
         ])
         .build(tauri::generate_context!())
         .expect("erro ao inicializar o AVIFnim Viewer")

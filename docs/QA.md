@@ -53,14 +53,31 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 
 ## Desempenho (benchmark)
 
-| Métrica | Meta | Status |
+| Métrica | Meta | Medido |
 |---|---|---|
-| Startup (janela criada) | < 1,0 s | ✅ **30–78 ms** (avg 60 ms, 5 runs, release, Windows 10; métrica = janela criada) |
-| Abrir AVIF 5 MB (SSD) | < 300 ms | ⏳ pendente (issue `avifnim-v0w`) |
-| Reprodução 1080p | 60 fps | ⏳ pendente |
+| Startup (janela criada) | < 1,0 s | ✅ **30–78 ms** (avg 60 ms, 5 runs, release, Windows 10) |
+| Abrir AVIF 5,38 MB (2400×1350, SSD) | < 300 ms | ✅ **258 ms** (até o primeiro paint) |
+| Abrir AVIF 1080p 3,44 MB | — | ✅ **180 ms** (primeiro paint) |
+| Abrir AVIF animado pequeno | — | ✅ 32 ms (primeiro paint) |
+| Reprodução de sequência | 60 fps | ✅ **56,4 fps** medidos (12 frames PNG, janela de 2 s) |
+| Animação AVIF/WebP/GIF em 1080p | 60 fps | ⏳ controlada pelo WebView2; sem API JS para contar frames de `<img>` animado (medir por captura/gravação de tela fica como follow-up) |
 | Memória do prefetch | ≤ teto configurado | ✅ cache LRU com cap + testes unitários |
 
-Reprodução do benchmark: `powershell -File scripts\bench-startup.ps1 -Runs 5`.
+### Modo de benchmark (reproduzível)
+
+O app tem um modo de benchmark ativado por variável de ambiente:
+
+```powershell
+$env:AVIFNIM_BENCH = "1"
+& "src-tauri\target\release\avifnim-viewer.exe" "tests\assets\big-5mb.avif"
+# resultados em %APPDATA%\com.avifnim.viewer\bench.log (JSON por linha)
+```
+
+Eventos emitidos: `first_paint` (ms do início da abertura até o frame pintado) e
+`sequence_fps` (frames exibidos em ~2 s numa sequência).
+
+- Startup: `powershell -File scripts\bench-startup.ps1 -Runs 5`
+- Amostras: `python scripts/make-test-assets.py` (gera `big-1080p.avif` e `big-5mb.avif`)
 
 ## Testes automatizados
 

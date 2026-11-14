@@ -9,6 +9,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 - Esqueleto **Tauri 2 + Rust** com UI HTML/CSS/JS (sem bundler) e instância única.
 - Abertura por diálogo nativo, drag & drop, argumento de linha de comando e evento `open-path`.
+- Título nativo da janela acompanhando o arquivo aberto.
+- Modo de benchmark (`AVIFNIM_BENCH=1`) com log JSON (`first_paint`, `sequence_fps`).
 - **Reprodução** de AVIF, WebP e GIF animados via webview do sistema (autoplay + loop do arquivo).
 - **Decode PPM/PNM (P1–P6, 8/16-bit)** em Rust puro (`image`), com caps de pixels/bytes e conversão para PNG.
 - **Navegação** na pasta com ordenação natural, setas do teclado e wrap-around.

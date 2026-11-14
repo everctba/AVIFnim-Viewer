@@ -138,11 +138,13 @@ mod tests {
     #[test]
     fn save_and_load_roundtrip() {
         let dir = temp_dir("avifnim-config-roundtrip");
-        let mut settings = Settings::default();
-        settings.lang = "en".into();
-        settings.prefetch_mb = 256;
-        settings.promo_seen = true;
-        settings.view_count = 9;
+        let settings = Settings {
+            lang: "en".into(),
+            prefetch_mb: 256,
+            promo_seen: true,
+            view_count: 9,
+            ..Settings::default()
+        };
         save(&dir, &settings).unwrap();
         let loaded = load(&dir);
         assert_eq!(loaded.lang, "en");
@@ -153,11 +155,13 @@ mod tests {
 
     #[test]
     fn normalizes_out_of_range_values() {
-        let mut settings = Settings::default();
-        settings.theme = "neon".into();
-        settings.lang = "xx".into();
-        settings.prefetch_mb = 99_999;
-        settings.seq_fps = 144;
+        let settings = Settings {
+            theme: "neon".into(),
+            lang: "xx".into(),
+            prefetch_mb: 99_999,
+            seq_fps: 144,
+            ..Settings::default()
+        };
         let normalized = settings.normalized();
         assert_eq!(normalized.theme, "auto");
         assert_eq!(normalized.lang, "pt");

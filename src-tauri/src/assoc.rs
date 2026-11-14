@@ -68,7 +68,7 @@ mod win {
                 .map_err(|e| format!("Falha ao gravar comando: {e}"))?;
             for ext in exts {
                 let open_with = classes
-                    .create_subkey(&format!(".{ext}\\OpenWithProgids"))
+                    .create_subkey(format!(".{ext}\\OpenWithProgids"))
                     .map_err(|e| format!("Falha ao registrar .{ext}: {e}"))?
                     .0;
                 open_with
@@ -88,8 +88,8 @@ mod win {
                 .map_err(|e| format!("Falha ao acessar HKCU\\Software\\Classes: {e}"))?;
             let _ = classes.delete_subkey_all(&progid);
             for ext in exts {
-                if let Ok(open_with) = classes
-                    .open_subkey_with_flags(&format!(".{ext}\\OpenWithProgids"), KEY_ALL_ACCESS)
+                if let Ok(open_with) =
+                    classes.open_subkey_with_flags(format!(".{ext}\\OpenWithProgids"), KEY_ALL_ACCESS)
                 {
                     let _ = open_with.delete_value(&progid);
                 }
