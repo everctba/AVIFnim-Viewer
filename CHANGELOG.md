@@ -5,6 +5,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ## [0.1.0] — 2026-11-13
 
+**Download:** [GitHub Releases — v0.1.0](https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.0)
+(instalador NSIS para Windows 10/11 x64; sem assinatura de código nesta versão).
+
 ### Adicionado
 
 - Esqueleto **Tauri 2 + Rust** com UI HTML/CSS/JS (sem bundler) e instância única.
