@@ -52,6 +52,7 @@ const I18N = {
     "empty.hint": "Dica: use ← → para navegar pela pasta",
 
     "error.generic": "Não foi possível abrir este arquivo.",
+    "error.decode": "Não foi possível decodificar este arquivo (corrompido ou formato não suportado pelo webview).",
     "error.openAnother": "Abrir outro",
     "banner.text": "Este {format} tem {size}. Em AVIF ficaria ~{est}.",
     "banner.cta": "Converter com AVIFnim",
@@ -152,6 +153,7 @@ const I18N = {
     "empty.hint": "Tip: use ← → to browse the folder",
 
     "error.generic": "Could not open this file.",
+    "error.decode": "Could not decode this file (corrupted or a format the system webview does not support).",
     "error.openAnother": "Open another",
     "banner.text": "This {format} is {size}. As AVIF it would be ~{est}.",
     "banner.cta": "Convert with AVIFnim",
@@ -255,6 +257,7 @@ const state = {
   bench: false,
   benchFrames: 0,
   benchStart: 0,
+  imageErrorShown: false,
 };
 
 /* ---------------- helpers ---------------- */
@@ -438,8 +441,10 @@ async function showCurrent() {
   try {
     const data = await invoke("load_image", { path: entry.path });
     state.current = data;
+    state.imageErrorShown = false;
     resetView();
     const img = $("viewer-img");
+    img.classList.remove("hidden");
     img.src = data.dataUrl;
     img.alt = data.name;
     $("dropzone").classList.add("hidden");
@@ -1172,6 +1177,14 @@ function bindUi() {
   });
 
   setupPointerPan();
+
+  // Arquivo "abriu" mas o webview nao conseguiu decodificar (corrompido/nao suportado).
+  $("viewer-img").addEventListener("error", () => {
+    if (!state.current || state.imageErrorShown) return;
+    state.imageErrorShown = true;
+    $("viewer-img").classList.add("hidden");
+    showError(t("error.decode"));
+  });
 
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
     if (state.settings.theme === "auto") applyTheme();

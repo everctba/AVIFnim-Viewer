@@ -13,3 +13,4 @@ dist/
 
 # Amostras grandes de benchmark (regeneraveis com scripts/make-test-assets.py)
 tests/assets/big-*.avif
+tests/assets/ppm4k.ppm

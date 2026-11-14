@@ -1,5 +1,8 @@
 # AVIFnim Viewer
 
+[![Download](https://img.shields.io/github/v/release/everctba/AVIFnim-Viewer?label=download&color=7c5cff)](https://github.com/everctba/AVIFnim-Viewer/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Visualizador **gratuito e open source (MIT)** de imagens animadas **AVIF, WebP e GIF** e de
 stills/sequências **PPM/PNM** para Windows, macOS e Linux — construído com **Tauri 2 + Rust**.
 

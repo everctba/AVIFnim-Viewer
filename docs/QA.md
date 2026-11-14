@@ -18,7 +18,7 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | PPM malformado | `broken.ppm` | mensagem amigável, sem crash | ✅ testado (screenshot) |
 | Sequência PNG | `seq/frame_0001..0012.png` | detecta 12 frames, loop 60 fps | ✅ testado ([sequence.png](images/sequence.png)) |
 | Nomes unicode/espaços | `coração ção — teste áéí.avif` | abre e exibe o título corretamente | ✅ testado |
-| Loop count 1x | — | toca uma vez e para | ⏳ manual (limitação documentada) |
+| Loop count 1x | — | toca uma vez e para | ✅ testado: `loop1.gif` — capturas em 1 s e 5 s idênticas (parou após tocar uma vez) |
 
 ## Navegação e UI
 
@@ -46,7 +46,7 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | PNM com magic desconhecido | erro amigável | ✅ teste unitário |
 | PNM 0×0 | erro amigável | ✅ teste unitário |
 | Arquivo > 256 MB | recusa antes de ler | ✅ implementado |
-| Arquivo corrompido (AVIF/WebP/GIF) | erro amigável, app continua utilizável | ⏳ manual |
+| Arquivo corrompido (AVIF/WebP/GIF) | erro amigável, app continua utilizável | ✅ testado: `corrupt-anim.avif` (e webp/gif truncados) exibem "Não foi possível decodificar este arquivo" com "Abrir outro", sem crash |
 | CSP restritiva / sem shell / sem conteúdo remoto | configuração do Tauri | ✅ revisão de código |
 | Sem telemetria / sem upload | somente leitura local | ✅ revisão de código |
 | Associações opt-in (registro HKCU) | só registra após o usuário marcar; remove ao desmarcar | ✅ teste unitário de roundtrip |
@@ -59,6 +59,7 @@ Amostras em [`tests/assets`](../tests/assets); evidências visuais em [`docs/ima
 | Abrir AVIF 5,38 MB (2400×1350, SSD) | < 300 ms | ✅ **258 ms** (até o primeiro paint) |
 | Abrir AVIF 1080p 3,44 MB | — | ✅ **180 ms** (primeiro paint) |
 | Abrir AVIF animado pequeno | — | ✅ 32 ms (primeiro paint) |
+| Abrir PPM 4K (4096×2160, 26,5 MB) | — | ✅ 1.698 ms (decode Rust → PNG → base64 → paint; cap de pixels ok) |
 | Reprodução de sequência | 60 fps | ✅ **56,4 fps** medidos (12 frames PNG, janela de 2 s) |
 | Animação AVIF/WebP/GIF em 1080p | 60 fps | ⏳ controlada pelo WebView2; sem API JS para contar frames de `<img>` animado (medir por captura/gravação de tela fica como follow-up) |
 | Memória do prefetch | ≤ teto configurado | ✅ cache LRU com cap + testes unitários |

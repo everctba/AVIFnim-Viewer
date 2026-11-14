@@ -107,6 +107,32 @@ def main():
         os.path.join(ASSETS, "big-5mb.avif"), "AVIF", quality=100
     )
 
+    # GIF com loop count 1x (toca uma vez e para)
+    one = frames(count=4)
+    one[0].save(
+        os.path.join(ASSETS, "loop1.gif"), "GIF",
+        save_all=True, append_images=one[1:], duration=120, loop=1,
+    )
+
+    # arquivos corrompidos (truncados) para QA de erro amigavel
+    def truncate(name, size):
+        with open(os.path.join(ASSETS, name), "rb") as f:
+            data = f.read()
+        with open(os.path.join(ASSETS, "corrupt-" + name), "wb") as f:
+            f.write(data[:size])
+
+    truncate("anim.avif", 120)
+    truncate("anim.webp", 120)
+    truncate("anim.gif", 120)
+
+    # PPM 4K binario (nao versionado; usado no QA de decode)
+    import numpy as np
+
+    arr = np.random.randint(0, 256, (2160, 4096, 3), dtype=np.uint8)
+    with open(os.path.join(ASSETS, "ppm4k.ppm"), "wb") as f:
+        f.write(b"P6\n4096 2160\n255\n")
+        f.write(arr.tobytes())
+
     print("assets gerados em", ASSETS)
 
 
