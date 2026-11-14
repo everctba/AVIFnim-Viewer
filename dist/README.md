@@ -6,8 +6,8 @@ Pasta de artefatos locais (binários **não** versionados; README/checksums são
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
-| `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 1,34 MB | `ef66e9c4…6d24e2` |
-| `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 3,44 MB | `adff1b1a…5454e` |
+| `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 1,34 MB | `c7a829a3…3fca4` |
+| `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 3,44 MB | `bd93ca1e…2b80d9` |
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
 não instala, não cria atalhos e não registra associações. Requer o WebView2 Runtime (Windows 10/11
