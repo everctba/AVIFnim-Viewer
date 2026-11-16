@@ -33,6 +33,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
   *unmaintained* documentadas em `src-tauri/deny.toml`), `npm audit` e **SBOM CycloneDX** como
   artefato do CI.
 - **GitHub Actions pinadas por commit SHA** e Dependabot configurado (cargo/npm/actions).
+- **CSP endurecida**: removidos `asset:`/`asset.localhost` (não usados) e adicionados
+  `object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'` — validado com
+  imagem, Sobre (logo SVG + AVIF promocional) e Configurações.
 - Adicionado **[SECURITY.md](SECURITY.md)** com política de reporte e escopo.
 
 > Build de teste do Windows para validação visual; a versão final multiplataforma será
