@@ -23,6 +23,18 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
   (cinza); o tema controla a interface inteira, incluindo o fundo da área da imagem — no dark a barra
   fica escura. O botão de tema na barra inferior alterna Claro ↔ Escuro.
 
+### Segurança
+
+- **`open_url` com allowlist**: só abre o GitHub do projeto e o e-mail do autor; URLs arbitrárias
+  (exfiltração em caso de renderer comprometido) são rejeitadas.
+- **`reveal_in_folder`/`open_with_dialog`** agora validam que o caminho é um arquivo de imagem
+  suportado (não abrem arquivos arbitrários).
+- **CI de supply chain**: `cargo audit`, `cargo deny` (advisories + licenças; exceções de
+  *unmaintained* documentadas em `src-tauri/deny.toml`), `npm audit` e **SBOM CycloneDX** como
+  artefato do CI.
+- **GitHub Actions pinadas por commit SHA** e Dependabot configurado (cargo/npm/actions).
+- Adicionado **[SECURITY.md](SECURITY.md)** com política de reporte e escopo.
+
 > Build de teste do Windows para validação visual; a versão final multiplataforma será
 > reconstruída após o feedback (Linux/macOS ainda em 0.1.1 até lá).
 

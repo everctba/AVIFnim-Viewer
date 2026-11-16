@@ -132,6 +132,16 @@ tests/assets/        # amostras para QA (AVIF/WebP/GIF/PPM/sequência)
 docs/                # documentação de build e QA
 ```
 
+## Segurança
+
+- **Sem rede/telemetria**; CSP restritiva e nenhum conteúdo remoto no app.
+- **`open_url` com allowlist** (só links oficiais do projeto/e-mail do autor) e comandos de reveal/
+  open-with limitados a arquivos de imagem suportados — mitiga exfiltração se o webview for comprometido.
+- **Caps de segurança** no parse de PPM/PNM e leitura de arquivos (256 MB / 100 MPix).
+- **Supply chain no CI**: `cargo audit`, `cargo deny` (advisories + licenças), `npm audit`,
+  **SBOM CycloneDX** e GitHub Actions **pinadas por commit SHA** (Dependabot configurado).
+- Política de reporte e detalhes em [SECURITY.md](SECURITY.md).
+
 ## Roadmap
 
 | Versão | Entrega |

@@ -25,6 +25,7 @@
 | macOS (.dmg universal) | ✅ | build universal verde no CI; asset no release |
 | Docs/licença | ✅ | README, LICENSE MIT, THIRD_PARTY_NOTICES, BUILD, QA, RELEASING, ADRs |
 | Benchmarks | ✅ | startup 60 ms; AVIF 5,38 MB 258 ms; sequência 56,4 fps |
+| Segurança (IPC + supply chain) | ✅ | allowlist `open_url`, validação de caminho, cargo audit/deny + SBOM no CI, Actions pinadas por SHA, [SECURITY.md](../SECURITY.md) |
 
 ## Pendências externas (bloqueios do owner/recursos)
 
