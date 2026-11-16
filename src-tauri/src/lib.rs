@@ -24,6 +24,27 @@ const REPO_URL: &str = "https://github.com/everctba/AVIFnim-Viewer";
 const SITE_URL: &str = "";
 const AVIFNIM_URL: &str = "";
 
+/// Allowlist de URLs que o app pode abrir no navegador.
+/// Se um renderer for comprometido, `open_url` nao pode ser usado para exfiltrar dados
+/// abrindo URLs arbitrarias. Ao definir site/AVIFnim oficiais, adicione-os aqui.
+const ALLOWED_URLS: &[&str] = &[REPO_URL, "mailto:mayerdesigner@gmail.com"];
+
+fn is_allowed_url(url: &str) -> bool {
+    if url.is_empty() || url.len() > 2048 {
+        return false;
+    }
+    ALLOWED_URLS.iter().any(|allowed| {
+        if allowed.starts_with("mailto:") {
+            url == *allowed
+        } else {
+            url == *allowed
+                || url.starts_with(&format!("{allowed}/"))
+                || url.starts_with(&format!("{allowed}?"))
+                || url.starts_with(&format!("{allowed}#"))
+        }
+    })
+}
+
 pub struct AppState {
     pub cache: Mutex<Cache>,
     pub settings: Mutex<Settings>,
@@ -318,8 +339,8 @@ fn app_info() -> AppInfo {
 #[tauri::command]
 fn reveal_in_folder(path: String) -> Result<(), String> {
     let file = PathBuf::from(&path);
-    if !file.exists() {
-        return Err(format!("Arquivo nao encontrado: {}", file.display()));
+    if !is_supported(&file) {
+        return Err(format!("Arquivo nao suportado: {}", file.display()));
     }
     let folder = file
         .parent()
@@ -346,8 +367,8 @@ fn reveal_in_folder(path: String) -> Result<(), String> {
 #[tauri::command]
 fn open_with_dialog(path: String) -> Result<(), String> {
     let file = PathBuf::from(&path);
-    if !file.exists() {
-        return Err(format!("Arquivo nao encontrado: {}", file.display()));
+    if !is_supported(&file) {
+        return Err(format!("Arquivo nao suportado: {}", file.display()));
     }
 
     #[cfg(target_os = "windows")]
@@ -368,8 +389,8 @@ fn open_with_dialog(path: String) -> Result<(), String> {
 
 #[tauri::command]
 fn open_url(url: String) -> Result<(), String> {
-    if !(url.starts_with("https://") || url.starts_with("http://")) {
-        return Err("URL invalida".into());
+    if !is_allowed_url(&url) {
+        return Err("URL nao permitida pelo AVIFnim Viewer".into());
     }
     open::that(url).map_err(|e| format!("Falha ao abrir o navegador: {e}"))
 }
@@ -575,5 +596,36 @@ mod tests {
     fn ignores_unsupported_argument() {
         let args = vec!["app.exe".to_string(), "arquivo.txt".to_string()];
         assert_eq!(find_supported_arg(&args), None);
+    }
+
+    #[test]
+    fn url_allowlist_blocks_external_urls() {
+        assert!(is_allowed_url(REPO_URL));
+        assert!(is_allowed_url(
+            "https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.1"
+        ));
+        assert!(is_allowed_url("mailto:mayerdesigner@gmail.com"));
+
+        assert!(!is_allowed_url("https://example.com/exfil?dados=secreto"));
+        assert!(!is_allowed_url("https://github.com/everctba/outro-repo"));
+        assert!(!is_allowed_url("http://github.com/everctba/AVIFnim-Viewer"));
+        assert!(!is_allowed_url("mailto:outro@example.com"));
+        assert!(!is_allowed_url("javascript:alert(1)"));
+        assert!(!is_allowed_url("file:///C:/Windows/System32/calc.exe"));
+        assert!(!is_allowed_url(""));
+    }
+
+    #[test]
+    fn supported_path_validation_rejects_non_images() {
+        let dir = std::env::temp_dir().join("avifnim-supported-test");
+        std::fs::create_dir_all(&dir).unwrap();
+        let txt = dir.join("nota.txt");
+        std::fs::write(&txt, b"x").unwrap();
+        let img = dir.join("foto.avif");
+        std::fs::write(&img, b"x").unwrap();
+        assert!(!is_supported(&txt));
+        assert!(is_supported(&img));
+        let _ = std::fs::remove_file(&txt);
+        let _ = std::fs::remove_file(&img);
     }
 }

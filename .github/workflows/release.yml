@@ -14,18 +14,20 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@39008827e6b4319a349e9a42dfc90579dd25f1ca # stable
+        with:
+          toolchain: stable
 
       - name: Rust cache
-        uses: swatinem/rust-cache@v2
+        uses: swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         with:
           workspaces: src-tauri -> target
 
       - name: Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
           cache: npm
@@ -34,7 +36,7 @@ jobs:
         run: npm ci
 
       - name: Build and upload release
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -45,17 +47,45 @@ jobs:
           prerelease: false
           args: --bundles nsis
 
+      - name: Install SBOM tool
+        uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2
+        with:
+          tool: cargo-cyclonedx
+
+      - name: Generate SBOM + checksums and attach to release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cargo cyclonedx --manifest-path src-tauri/Cargo.toml --format json
+          $sbom = Get-ChildItem src-tauri -Filter '*.cdx.json' | Select-Object -First 1
+          if (-not $sbom) { throw 'SBOM nao gerado' }
+          $files = @()
+          $bundleDir = 'src-tauri/target/release/bundle/nsis'
+          if (Test-Path $bundleDir) {
+            $files += Get-ChildItem $bundleDir -Filter '*.exe'
+          }
+          $lines = @()
+          foreach ($f in $files + $sbom) {
+            $lines += ("{0}  {1}" -f (Get-FileHash $f.FullName -Algorithm SHA256).Hash.ToLower(), $f.Name)
+          }
+          [IO.File]::WriteAllLines('SHA256SUMS.txt', $lines, (New-Object System.Text.UTF8Encoding($false)))
+          $assets = @('SHA256SUMS.txt', $sbom.FullName)
+          gh release upload "${{ github.ref_name }}" @assets --clobber
+
   test:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@39008827e6b4319a349e9a42dfc90579dd25f1ca # stable
+        with:
+          toolchain: stable
 
       - name: Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
           cache: npm

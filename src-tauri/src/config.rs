@@ -137,7 +137,7 @@ mod tests {
     fn defaults_when_file_missing() {
         let dir = temp_dir("avifnim-config-missing");
         let settings = load(&dir);
-        assert_eq!(settings.theme, "auto");
+        assert_eq!(settings.theme, "dark");
         assert_eq!(settings.seq_fps, 60);
     }
 
@@ -169,7 +169,7 @@ mod tests {
             ..Settings::default()
         };
         let normalized = settings.normalized();
-        assert_eq!(normalized.theme, "auto");
+        assert_eq!(normalized.theme, "dark");
         assert_eq!(normalized.lang, "pt");
         assert_eq!(normalized.prefetch_mb, 1024);
         assert_eq!(normalized.seq_fps, 60);
