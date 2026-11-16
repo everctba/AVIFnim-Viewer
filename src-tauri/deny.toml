@@ -3,7 +3,14 @@
 [advisories]
 version = 2
 yanked = "deny"
-ignore = []
+ignore = [
+  # Dependencias transitivas do stack GTK/zbus do Tauri no Linux (sem upgrade seguro
+  # disponivel nesta versao). Vulnerabilidades continuam bloqueando o CI.
+  "RUSTSEC-2024-0370", # proc-macro-error (gtk-rs 0.18)
+  "RUSTSEC-2026-0370", # zvariant_derive (rfd/ashpd/zbus)
+  "RUSTSEC-2026-0371", # zbus_names (rfd/ashpd/zbus)
+  "RUSTSEC-2026-0372", # zvariant (rfd/ashpd/zbus)
+]
 
 [licenses]
 version = 2
@@ -18,9 +25,7 @@ allow = [
   "0BSD",
   "ISC",
   "Unicode-3.0",
-  "Unicode-DFS-2016",
   "Zlib",
-  "BSL-1.0",
   "CC0-1.0",
   "Unlicense",
   "MPL-2.0",
