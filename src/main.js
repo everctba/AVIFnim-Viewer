@@ -81,6 +81,10 @@ const I18N = {
     "settings.assoc.default": "Definir como padrão…",
     "settings.assoc.hint": "Abre as configurações do sistema; o app não altera o padrão silenciosamente.",
     "settings.assoc.platformNote": "No Linux, as associações são definidas pelo sistema (menu “Abrir com” do gerenciador de arquivos). No macOS, use “Abrir com” → “Alterar tudo” no Finder.",
+    "settings.macAssoc.title": "Associações no macOS",
+    "settings.macAssoc.desc": "Define o AVIFnim Viewer como app padrão para AVIF, WebP, GIF e PPM/PNM.",
+    "settings.macAssoc.button": "Definir como padrão no macOS",
+    "toast.defaultSet": "AVIFnim Viewer definido como padrão",
     "settings.appearance": "Aparência",
     "settings.theme": "Tema",
     "settings.lang": "Idioma",
@@ -207,6 +211,10 @@ const I18N = {
     "settings.assoc.default": "Set as default…",
     "settings.assoc.hint": "Opens the system settings; the app never silently changes defaults.",
     "settings.assoc.platformNote": "On Linux, file associations are managed by the system (the file manager’s “Open with” menu). On macOS, use “Open with” → “Change All” in Finder.",
+    "settings.macAssoc.title": "Associations on macOS",
+    "settings.macAssoc.desc": "Sets AVIFnim Viewer as the default app for AVIF, WebP, GIF and PPM/PNM.",
+    "settings.macAssoc.button": "Set as default on macOS",
+    "toast.defaultSet": "AVIFnim Viewer set as default",
     "settings.appearance": "Appearance",
     "settings.theme": "Theme",
     "settings.lang": "Language",
@@ -985,7 +993,9 @@ function applyPlatformMenu() {
   const assocSection = $("settings-assoc");
   const assocNote = $("settings-assoc-note");
   if (assocSection) assocSection.hidden = !isWindows;
-  if (assocNote) assocNote.hidden = isWindows;
+  const macAssoc = $("settings-mac-assoc");
+  if (macAssoc) macAssoc.hidden = state.platform !== "macos";
+  if (assocNote) assocNote.hidden = isWindows || state.platform === "macos";
 }
 
 function showCtxMenu(clientX, clientY) {
@@ -1624,6 +1634,17 @@ function bindUi() {
   $("btn-default-apps").addEventListener("click", () => {
     invoke("open_default_apps_settings").catch((err) => toast(String(err)));
   });
+  const macDefault = $("btn-mac-default");
+  if (macDefault) {
+    macDefault.addEventListener("click", async () => {
+      try {
+        await invoke("set_default_file_associations");
+        toast(t("toast.defaultSet"));
+      } catch (err) {
+        toast(String(err));
+      }
+    });
+  }
   $("btn-reset-promo").addEventListener("click", () => {
     persistSettings({ promo_seen: false });
     toast(t("toast.promoReset"));

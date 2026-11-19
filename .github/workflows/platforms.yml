@@ -155,7 +155,16 @@ jobs:
         run: npm ci
 
       - name: Build universal .dmg
-        run: npx tauri build --target universal-apple-darwin --bundles dmg
+        run: npx tauri build --target universal-apple-darwin --bundles dmg --config src-tauri/tauri.macos.conf.json
+
+      - name: Verify document types (Info.plist)
+        run: |
+          set -e
+          plist="$(find src-tauri/target -path '*bundle/macos/*.app/Contents/Info.plist' | head -n1)"
+          test -n "$plist"
+          plutil -p "$plist" | grep -q 'CFBundleDocumentTypes'
+          plutil -p "$plist" | grep -qi 'avif'
+          echo "OK: CFBundleDocumentTypes com AVIF no Info.plist"
 
       - name: Upload .dmg
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

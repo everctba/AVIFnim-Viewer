@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "fileAssociations": [
+      {
+        "ext": ["avif"],
+        "name": "AVIF Image",
+        "role": "Viewer",
+        "mimeType": "image/avif"
+      },
+      {
+        "ext": ["webp"],
+        "name": "WebP Image",
+        "role": "Viewer",
+        "mimeType": "image/webp"
+      },
+      {
+        "ext": ["gif"],
+        "name": "GIF Image",
+        "role": "Viewer",
+        "mimeType": "image/gif"
+      },
+      {
+        "ext": ["ppm", "pgm", "pbm", "pnm"],
+        "name": "PPM/PNM Image",
+        "role": "Viewer",
+        "mimeType": "image/x-portable-pixmap"
+      },
+      {
+        "ext": ["png"],
+        "name": "PNG Image",
+        "role": "Viewer",
+        "mimeType": "image/png"
+      },
+      {
+        "ext": ["jpg", "jpeg"],
+        "name": "JPEG Image",
+        "role": "Viewer",
+        "mimeType": "image/jpeg"
+      }
+    ]
+  }
+}

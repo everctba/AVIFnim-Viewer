@@ -2,6 +2,8 @@ mod assoc;
 mod avif_fallback;
 mod cache;
 mod config;
+#[cfg(target_os = "macos")]
+mod macos_ls;
 pub mod pnm;
 
 use std::collections::HashMap;
@@ -647,6 +649,21 @@ fn open_default_apps_settings(state: tauri::State<'_, AppState>) -> Result<(), S
     }
 }
 
+/// macOS: registra o app como handler padrao para os formatos suportados.
+#[tauri::command]
+fn set_default_file_associations(app: tauri::AppHandle) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    {
+        let bundle_id = app.config().identifier.clone();
+        macos_ls::set_default_handlers(&bundle_id)
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        let _ = app;
+        Err("Feature only available on macOS".to_string())
+    }
+}
+
 #[tauri::command]
 fn set_window_theme(window: tauri::WebviewWindow, dark: bool) {
     let theme = if dark {
@@ -752,6 +769,7 @@ pub fn run() {
             set_association,
             avifnim_installed,
             open_default_apps_settings,
+            set_default_file_associations,
             set_window_theme,
             set_window_title,
             bench_mode,
