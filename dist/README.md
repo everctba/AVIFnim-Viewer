@@ -2,18 +2,18 @@
 
 Pasta de artefatos locais (binários **não** versionados; README/checksums são).
 
-## Build atual — 0.1.2 (não publicado; portátil Windows em `1e0c658`)
+## Build atual — 0.1.2 (não publicado; Linux/macOS em `283b9f8`, portátil Windows em `1e0c658`)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
 | `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,74 MB | `0184d16c…9f73ef` |
 | `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `bc940f54…28a41d` |
-| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `6ade3890…29dc89` |
-| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,50 MB | `99a14aa2…aa395b` |
+| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `4d353a37…78e2e7` |
+| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,50 MB | `d8dc0936…e1c529` |
 
-> Somente o **portátil Windows** foi rebuildado com Auto play, fita nas Configurações e associações
-> só no Windows (commit `1e0c658`). Instalador Windows, `.deb` e `.dmg` permanecem no build
-> `be06753` até o próximo rebuild.
+> Linux/macOS rebuildados em `283b9f8` — o `.deb` agora declara os **MIME types** no `.desktop`
+> (`image/avif`, `image/webp`, `image/gif`, PNM etc.), então o app aparece no **“Abrir com”**.
+> Portátil Windows em `1e0c658`; instalador Windows ainda em `be06753`.
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
 não instala, não cria atalhos e não registra associações. Requer o WebView2 Runtime (Windows 10/11
