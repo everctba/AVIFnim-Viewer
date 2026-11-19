@@ -115,6 +115,25 @@ body {
   white-space: nowrap;
 }
 
+/* ON = azul primario; OFF = cinza discreto. */
+.seq-autoplay.on {
+  background: var(--primary);
+  color: #fff;
+}
+
+.seq-autoplay.on:hover {
+  background: var(--primary-hover);
+}
+
+.seq-autoplay.off {
+  background: var(--bg-elev-2);
+  color: var(--text-muted, var(--text));
+}
+
+.seq-autoplay.off:hover {
+  background: var(--border);
+}
+
 @media (max-width: 900px) {
   .toolbar {
     column-gap: 4px;
