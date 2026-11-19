@@ -33,7 +33,7 @@ rede é abrir um link no navegador). A superfície de ataque principal é:
 ## Medidas implementadas
 
 - **Sem rede no app**, CSP restritiva, sem conteúdo remoto, sem `eval`.
-- **`open_url` com allowlist** (GitHub do projeto, site oficial `avifnim.com.br`, página de doação
+- **`open_url` com allowlist** (GitHub do projeto, site oficial `everctba.github.io/avifnim-site`, página de doação
   do PayPal e o e-mail do autor); URLs arbitrárias são rejeitadas — evita exfiltração caso o
   renderer seja comprometido.
 - **`reveal_in_folder` / `open_with_dialog`** validam que o caminho é um **arquivo de imagem

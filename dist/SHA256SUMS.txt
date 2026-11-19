@@ -1,4 +1,4 @@
 434ca2efd352fed265778d00ae6b5976d60422a0864f413b0f67abf133fbdf3a  avifnim-viewer_0.1.2_amd64.deb
 876382836db63364cb0d0541b70a2c8dc11758e8452312aefa30613a191a4025  AVIFnim.Viewer_0.1.2_universal.dmg
 0184d16c7a32d554972a76eda2dee5ae614380018c6d61dad490a966c79f73ef  AVIFnim.Viewer_0.1.2_x64-setup.exe
-bc940f545d954d30d16eb9fc09e37d16cc262b5a788ce087d40660f98428a41d  AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe
+53707cade449977c9382d05429b3674f10c58499a3bf10731d27aaa0d6f23580  AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe

@@ -24,8 +24,8 @@ const MAX_FILE_BYTES: u64 = 256 * 1024 * 1024;
 
 // URLs oficiais do projeto.
 const REPO_URL: &str = "https://github.com/everctba/AVIFnim-Viewer";
-const SITE_URL: &str = "https://avifnim.com.br";
-const AVIFNIM_URL: &str = "https://avifnim.com.br";
+const SITE_URL: &str = "https://everctba.github.io/avifnim-site";
+const AVIFNIM_URL: &str = "https://everctba.github.io/avifnim-site";
 // Pagina de doacao (PayPal). O sufixo "/" permite query string (business, amount, currency).
 const PAYPAL_URL: &str = "https://www.paypal.com/donate/";
 
@@ -900,14 +900,14 @@ mod tests {
         assert!(is_allowed_url("mailto:mayerdesigner@gmail.com"));
         assert!(is_allowed_url(SITE_URL));
         assert!(is_allowed_url(AVIFNIM_URL));
-        assert!(is_allowed_url("https://avifnim.com.br/"));
+        assert!(is_allowed_url("https://everctba.github.io/avifnim-site/"));
         assert!(is_allowed_url(PAYPAL_URL));
         assert!(is_allowed_url(
             "https://www.paypal.com/donate/?business=mayerdesigner%40gmail.com&currency_code=USD&amount=5.00"
         ));
 
         assert!(!is_allowed_url("https://example.com/exfil?dados=secreto"));
-        assert!(!is_allowed_url("https://evil.avifnim.com.br"));
+        assert!(!is_allowed_url("https://everctba.github.io/avifnim-site-other"));
         assert!(!is_allowed_url("https://www.paypal.com/donate.evil/?x=1"));
         assert!(!is_allowed_url("https://www.paypal.com/signin"));
         assert!(!is_allowed_url("https://github.com/everctba/outro-repo"));
