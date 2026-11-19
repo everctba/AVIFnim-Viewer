@@ -52,6 +52,14 @@
         "postInstallScript": "linux/postinst.sh",
         "postRemoveScript": "linux/postremove.sh"
       }
+    },
+    "macOS": {
+      "dmg": {
+        "background": "assets/dmg-background.png",
+        "windowSize": { "width": 660, "height": 400 },
+        "appPosition": { "x": 200, "y": 200 },
+        "applicationFolderPosition": { "x": 460, "y": 200 }
+      }
     }
   }
 }

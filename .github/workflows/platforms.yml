@@ -170,7 +170,8 @@ jobs:
           test -f "$plist"
           plutil -p "$plist" | grep -q 'CFBundleDocumentTypes'
           plutil -p "$plist" | grep -qi 'avif'
-          echo "OK: CFBundleDocumentTypes com AVIF no Info.plist"
+          test -n "$(find "$mount" -maxdepth 3 -iname 'background.*' | head -n1)"
+          echo "OK: CFBundleDocumentTypes com AVIF e background no dmg"
 
       - name: Upload .dmg
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
