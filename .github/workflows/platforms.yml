@@ -176,7 +176,7 @@ jobs:
           plutil -p "$plist" | grep -Ei 'CFBundleDocumentTypes|avif' || true
           plutil -p "$plist" | grep -q 'CFBundleDocumentTypes'
           plutil -p "$plist" | grep -qi 'avif'
-          test -n "$(find "$mount" -maxdepth 4 -iname 'background.*' | head -n1)"
+          test -n "$(find "$mount" -maxdepth 4 -iname '*background*.png' | head -n1)"
           echo "OK: CFBundleDocumentTypes com AVIF e background no dmg"
 
       - name: Upload .dmg
