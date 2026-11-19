@@ -28,3 +28,4 @@ tests/assets/ppm4k.ppm
 
 # imagens soltas na raiz (nao sao assets do app)
 /*.webp
+BannerAbout-branco.png
