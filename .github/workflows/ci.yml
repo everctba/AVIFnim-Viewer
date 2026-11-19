@@ -121,7 +121,7 @@ jobs:
 
       - name: Fuzz pnm_decode (60s)
         working-directory: src-tauri
-        run: cargo fuzz run pnm_decode -- -max_total_time=60 -rss_limit_mb=2048
+        run: cargo fuzz run --target x86_64-unknown-linux-gnu pnm_decode -- -max_total_time=60 -rss_limit_mb=2048
 
       - name: Upload fuzz artifacts on failure
         if: failure()
