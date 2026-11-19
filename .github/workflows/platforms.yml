@@ -50,7 +50,7 @@ jobs:
         run: npm ci
 
       - name: Build .deb
-        run: npx tauri build --bundles deb
+        run: npx tauri build --bundles deb --config src-tauri/tauri.linux.conf.json
 
       - name: Normalize .deb package name
         run: bash scripts/fix-deb-package-name.sh
@@ -100,6 +100,16 @@ jobs:
           test -f "$HOME/Desktop/avifnim-viewer.desktop"
           grep -q '^Exec=avifnim-viewer' "$HOME/Desktop/avifnim-viewer.desktop"
           echo "OK: atalho criado automaticamente pelo postinst"
+
+      - name: Verify MIME types (Open With)
+        run: |
+          set -e
+          desktop=/usr/share/applications/avifnim-viewer.desktop
+          grep -q 'MimeType=.*image/avif' "$desktop"
+          grep -q 'MimeType=.*image/webp' "$desktop"
+          grep -q 'MimeType=.*image/gif' "$desktop"
+          grep -q 'MimeType=.*image/x-portable-pixmap' "$desktop"
+          echo "OK: MimeType registrado para Abrir com"
 
       - name: Run app headless with an animated image
         run: |
