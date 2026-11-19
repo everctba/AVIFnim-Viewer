@@ -58,6 +58,8 @@ pub struct AppState {
     pub cache: Mutex<Cache>,
     pub settings: Mutex<Settings>,
     pub data_dir: PathBuf,
+    /// Arquivo recebido pelo macOS via Apple Event antes do frontend carregar.
+    pub pending_open: Mutex<Option<String>>,
 }
 
 impl AppState {
@@ -68,6 +70,7 @@ impl AppState {
             cache: Mutex::new(Cache::new(cap)),
             settings: Mutex::new(settings),
             data_dir,
+            pending_open: Mutex::new(None),
         }
     }
 }
@@ -292,7 +295,14 @@ fn find_supported_arg(argv: &[String]) -> Option<String> {
 }
 
 #[tauri::command]
-fn initial_arg() -> Option<String> {
+fn initial_arg(state: tauri::State<'_, AppState>) -> Option<String> {
+    // No macOS o duplo clique no Finder chega por Apple Event (RunEvent::Opened),
+    // que pode disparar antes do frontend registrar o listener.
+    if let Ok(mut pending) = state.pending_open.lock() {
+        if let Some(path) = pending.take() {
+            return Some(path);
+        }
+    }
     let args: Vec<String> = std::env::args().collect();
     find_supported_arg(&args)
 }
@@ -762,7 +772,19 @@ fn handle_run_event(app: &tauri::AppHandle, event: &tauri::RunEvent) {
     if let tauri::RunEvent::Opened { urls } = event {
         for url in urls {
             if let Ok(path) = url.to_file_path() {
-                let _ = app.emit("open-path", path.to_string_lossy().into_owned());
+                if !is_supported(&path) {
+                    continue;
+                }
+                let path_string = path.to_string_lossy().into_owned();
+                if let Some(state) = app.try_state::<AppState>() {
+                    if let Ok(mut pending) = state.pending_open.lock() {
+                        if pending.is_none() {
+                            *pending = Some(path_string.clone());
+                        }
+                    }
+                }
+                let _ = app.emit("open-path", path_string);
+                break;
             }
         }
     }

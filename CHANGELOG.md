@@ -25,6 +25,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Fallback AVIF nativo**: quando o webview não decodifica AVIF (ex.: WebKitGTK do Mint sem suporte),
   o app decodifica **still e animação** em Rust puro (`avif-rust`, MIT), respeita as durações dos
   frames e toca pelo player de sequência — sem FFmpeg/GPL.
+- **macOS: abrir arquivo pelo Finder** agora carrega a imagem na primeira abertura: o Apple Event
+  `Opened` guarda o caminho pendente e o `initial_arg` o entrega ao frontend (antes o evento podia
+  chegar antes do listener e ser perdido).
 - **Modal “Meet AVIFnim”**: título com a faixa colorida (fita-cor, clara no tema light) e removida a
   frase “Este aviso aparece uma única vez.”.
 - **Mensagens de erro traduzidas e acentuadas**: recursos só de plataforma (associações de arquivo,
