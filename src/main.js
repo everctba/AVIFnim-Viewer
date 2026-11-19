@@ -46,6 +46,9 @@ const I18N = {
     "toolbar.settings": "Configurações",
     "toolbar.about": "Sobre",
     "toolbar.noFile": "Nenhum arquivo aberto",
+    "toolbar.autoplay": "Ligar/desligar auto play das sequências da pasta",
+    "seq.autoplayOn": "Auto play: ligado",
+    "seq.autoplayOff": "Auto play: desligado",
 
     "empty.title": "Arraste uma imagem aqui",
     "empty.subtitle": "AVIF, WebP e GIF animados · PPM/PNM · sequências PNG/JPG",
@@ -168,6 +171,9 @@ const I18N = {
     "toolbar.settings": "Settings",
     "toolbar.about": "About",
     "toolbar.noFile": "No file open",
+    "toolbar.autoplay": "Toggle folder sequence auto play",
+    "seq.autoplayOn": "Auto play: on",
+    "seq.autoplayOff": "Auto play: off",
 
     "empty.title": "Drag an image here",
     "empty.subtitle": "Animated AVIF, WebP and GIF · PPM/PNM · PNG/JPG sequences",
@@ -291,6 +297,8 @@ const state = {
   seq: null,
   seqTimer: null,
   seqBuffer: new Map(),
+  seqCandidate: null,
+  autoplay: true,
   seqLoads: 0,
   bannerDismissedSession: false,
   dragging: false,
@@ -602,6 +610,8 @@ function updateChrome() {
   if (!cur) {
     title.textContent = t("toolbar.noFile");
     badge.classList.add("hidden");
+    state.seqCandidate = null;
+    updateAutoplayPill(false, state.autoplay);
     document.title = "AVIFnim Viewer";
     invoke("set_window_title", { title: "AVIFnim Viewer" }).catch(() => {});
     return;
@@ -644,8 +654,37 @@ async function openDialog() {
 
 /* ---------------- sequências (G7) ---------------- */
 
+function updateAutoplayPill(visible, on) {
+  const btn = $("btn-autoplay");
+  if (!btn) return;
+  btn.classList.toggle("hidden", !visible);
+  btn.disabled = !visible;
+  btn.classList.toggle("primary", visible && on);
+  btn.classList.toggle("subtle", !(visible && on));
+  btn.textContent = t(on ? "seq.autoplayOn" : "seq.autoplayOff");
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+}
+
+function toggleAutoplay() {
+  state.autoplay = !state.autoplay;
+  const candidate = state.seqCandidate;
+  updateAutoplayPill(!!candidate, state.autoplay);
+  if (!candidate) return;
+  if (state.autoplay) {
+    startSequence(candidate.frames, candidate.start);
+  } else {
+    stopSequence();
+    if (state.current && state.current.dataUrl) {
+      $("viewer-img").src = state.current.dataUrl;
+    }
+    updateZoomLabel();
+  }
+}
+
 function startSequenceIfDetected() {
   stopSequence();
+  state.seqCandidate = null;
+  updateAutoplayPill(false, state.autoplay);
   const cur = state.current;
   if (!cur) return;
   const ext = extOf(cur.path);
@@ -658,7 +697,11 @@ function startSequenceIfDetected() {
   if (frames.length < 2) return;
   const start = frames.findIndex((entry) => samePath(entry.path, cur.path));
   if (start < 0) return;
-  startSequence(frames.map((entry) => entry.path), start);
+
+  const paths = frames.map((entry) => entry.path);
+  state.seqCandidate = { frames: paths, start };
+  updateAutoplayPill(true, state.autoplay);
+  if (state.autoplay) startSequence(paths, start);
 }
 
 function startSequence(frames, startIndex, durations) {
@@ -1502,6 +1545,7 @@ function setupPointerPan() {
 function bindUi() {
   $("btn-open").addEventListener("click", openDialog);
   $("btn-open-empty").addEventListener("click", openDialog);
+  $("btn-autoplay").addEventListener("click", toggleAutoplay);
   $("dropzone").addEventListener("click", (event) => {
     if (event.target.id !== "btn-open-empty") openDialog();
   });
