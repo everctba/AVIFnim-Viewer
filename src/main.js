@@ -490,6 +490,7 @@ async function showCurrent() {
   const entry = state.siblings[state.index];
   if (!entry) return;
   hideCtxMenu();
+  hideError();
   const startedAt = performance.now();
   const hadImage = !!state.current;
   setBusy(true);
