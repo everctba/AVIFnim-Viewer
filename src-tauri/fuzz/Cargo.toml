@@ -9,9 +9,7 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-
-[dependencies.avifnim-viewer]
-path = ".."
+image = { version = "0.25", default-features = false, features = ["png", "pnm"] }
 
 [[bin]]
 name = "pnm_decode"
