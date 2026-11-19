@@ -41,14 +41,14 @@ mod win {
     pub fn set_association(group: &str, enabled: bool) -> Result<bool, String> {
         let exts = group_exts(group);
         if exts.is_empty() {
-            return Err(format!("Grupo de associacao desconhecido: {group}"));
+            return Err(format!("Grupo de associação desconhecido: {group}"));
         }
         let hkcu = RegKey::predef(HKEY_CURRENT_USER);
         let progid = progid(group);
         if enabled {
             let exe = exe_path();
             if exe.is_empty() {
-                return Err("Nao foi possivel descobrir o caminho do executavel".into());
+                return Err("Não foi possível descobrir o caminho do executável".into());
             }
             let classes = hkcu
                 .open_subkey_with_flags("Software\\Classes", KEY_ALL_ACCESS | KEY_WOW64_64KEY)
@@ -62,7 +62,7 @@ mod win {
                 .map_err(|e| format!("Falha ao gravar ProgID: {e}"))?;
             def.create_subkey("DefaultIcon")
                 .and_then(|(k, _)| k.set_value("", &format!("\"{exe}\",0")))
-                .map_err(|e| format!("Falha ao gravar icone: {e}"))?;
+                .map_err(|e| format!("Falha ao gravar ícone: {e}"))?;
             def.create_subkey("shell\\open\\command")
                 .and_then(|(k, _)| k.set_value("", &format!("\"{exe}\" \"%1\"")))
                 .map_err(|e| format!("Falha ao gravar comando: {e}"))?;
@@ -162,7 +162,7 @@ mod other {
 
     pub fn set_association(_group: &str, _enabled: bool) -> Result<bool, String> {
         Err(
-            "Associacoes de arquivo sao gerenciadas pelo sistema operacional nesta plataforma"
+            "Associações de arquivo são gerenciadas pelo sistema operacional nesta plataforma"
                 .into(),
         )
     }

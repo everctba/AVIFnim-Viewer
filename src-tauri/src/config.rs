@@ -128,13 +128,13 @@ pub fn load(dir: &Path) -> Settings {
 
 pub fn save(dir: &Path, settings: &Settings) -> Result<(), String> {
     std::fs::create_dir_all(dir)
-        .map_err(|e| format!("Falha ao criar pasta de configuracao: {e}"))?;
+        .map_err(|e| format!("Falha ao criar pasta de configuração: {e}"))?;
     let path = settings_path(dir);
     let tmp = path.with_extension("json.tmp");
     let raw = serde_json::to_string_pretty(settings)
-        .map_err(|e| format!("Falha ao serializar configuracao: {e}"))?;
-    std::fs::write(&tmp, raw).map_err(|e| format!("Falha ao gravar configuracao: {e}"))?;
-    std::fs::rename(&tmp, &path).map_err(|e| format!("Falha ao salvar configuracao: {e}"))?;
+        .map_err(|e| format!("Falha ao serializar configuração: {e}"))?;
+    std::fs::write(&tmp, raw).map_err(|e| format!("Falha ao gravar configuração: {e}"))?;
+    std::fs::rename(&tmp, &path).map_err(|e| format!("Falha ao salvar configuração: {e}"))?;
     Ok(())
 }
 

@@ -171,13 +171,69 @@ fn localized(lang: &str, pt: String, en: String) -> String {
     }
 }
 
+/// Traduz mensagens fixas do backend (associacoes/recursos de plataforma) para EN.
+fn localize_known_error(err: String, lang: &str) -> String {
+    if lang != "en" {
+        return err;
+    }
+    const EXACT: &[(&str, &str)] = &[
+        (
+            "Associações de arquivo são gerenciadas pelo sistema operacional nesta plataforma",
+            "File associations are managed by the operating system on this platform",
+        ),
+        (
+            "'Abrir com…' está disponível apenas no Windows",
+            "'Open with…' is only available on Windows",
+        ),
+        (
+            "Recurso disponível apenas no Windows",
+            "Feature only available on Windows",
+        ),
+        (
+            "URL não permitida pelo AVIFnim Viewer",
+            "URL not allowed by AVIFnim Viewer",
+        ),
+        (
+            "Não foi possível descobrir o caminho do executável",
+            "Could not determine the executable path",
+        ),
+    ];
+    for (pt, en) in EXACT {
+        if err == *pt {
+            return (*en).to_string();
+        }
+    }
+    if let Some(rest) = err.strip_prefix("Grupo de associação desconhecido: ") {
+        return format!("Unknown association group: {rest}");
+    }
+    if let Some(rest) = err.strip_prefix("Falha ao acessar HKCU\\Software\\Classes: ") {
+        return format!("Failed to access HKCU\\Software\\Classes: {rest}");
+    }
+    if let Some(rest) = err.strip_prefix("Falha ao registrar ") {
+        return format!("Failed to register {rest}");
+    }
+    if let Some(rest) = err.strip_prefix("Falha ao gravar ProgID: ") {
+        return format!("Failed to write ProgID: {rest}");
+    }
+    if let Some(rest) = err.strip_prefix("Falha ao gravar ícone: ") {
+        return format!("Failed to write icon: {rest}");
+    }
+    if let Some(rest) = err.strip_prefix("Falha ao gravar comando: ") {
+        return format!("Failed to write command: {rest}");
+    }
+    if let Some(rest) = err.strip_prefix("Falha ao adicionar abre-com para ") {
+        return format!("Failed to add open-with for {rest}");
+    }
+    err
+}
+
 fn read_file_cached(state: &AppState, path: &Path, lang: &str) -> Result<Arc<Vec<u8>>, String> {
     let key = path.to_string_lossy().into_owned();
     {
         let mut cache = state.cache.lock().map_err(|_| {
             localized(
                 lang,
-                "Cache indisponivel".to_string(),
+                "Cache indisponível".to_string(),
                 "Cache unavailable".to_string(),
             )
         })?;
@@ -188,7 +244,7 @@ fn read_file_cached(state: &AppState, path: &Path, lang: &str) -> Result<Arc<Vec
     let meta = std::fs::metadata(path).map_err(|e| {
         localized(
             lang,
-            format!("Nao foi possivel acessar '{}': {e}", path.display()),
+            format!("Não foi possível acessar '{}': {e}", path.display()),
             format!("Could not access '{}': {e}", path.display()),
         )
     })?;
@@ -208,7 +264,7 @@ fn read_file_cached(state: &AppState, path: &Path, lang: &str) -> Result<Arc<Vec
     let bytes = std::fs::read(path).map_err(|e| {
         localized(
             lang,
-            format!("Nao foi possivel ler '{}': {e}", path.display()),
+            format!("Não foi possível ler '{}': {e}", path.display()),
             format!("Could not read '{}': {e}", path.display()),
         )
     })?;
@@ -216,7 +272,7 @@ fn read_file_cached(state: &AppState, path: &Path, lang: &str) -> Result<Arc<Vec
     let mut cache = state.cache.lock().map_err(|_| {
         localized(
             lang,
-            "Cache indisponivel".to_string(),
+            "Cache indisponível".to_string(),
             "Cache unavailable".to_string(),
         )
     })?;
@@ -242,11 +298,22 @@ fn initial_arg() -> Option<String> {
 }
 
 #[tauri::command]
-fn open_file_dialog() -> Option<String> {
+fn open_file_dialog(state: tauri::State<'_, AppState>) -> Option<String> {
+    let lang = app_lang(&state);
+    let title = if lang == "en" {
+        "Open image"
+    } else {
+        "Abrir imagem"
+    };
+    let all_filter = if lang == "en" {
+        "Supported images"
+    } else {
+        "Imagens suportadas"
+    };
     rfd::FileDialog::new()
-        .set_title("Abrir imagem")
+        .set_title(title)
         .add_filter(
-            "Imagens suportadas",
+            all_filter,
             &[
                 "avif", "webp", "gif", "ppm", "pgm", "pbm", "pnm", "png", "jpg", "jpeg",
             ],
@@ -266,7 +333,7 @@ fn load_image(path: String, state: tauri::State<'_, AppState>) -> Result<ImageDa
     if !file.is_file() {
         return Err(localized(
             &lang,
-            format!("Arquivo nao encontrado: {}", file.display()),
+            format!("Arquivo não encontrado: {}", file.display()),
             format!("File not found: {}", file.display()),
         ));
     }
@@ -274,7 +341,7 @@ fn load_image(path: String, state: tauri::State<'_, AppState>) -> Result<ImageDa
     if !SUPPORTED_EXTS.contains(&ext.as_str()) {
         return Err(localized(
             &lang,
-            format!("Formato nao suportado: .{ext}"),
+            format!("Formato não suportado: .{ext}"),
             format!("Unsupported format: .{ext}"),
         ));
     }
@@ -312,7 +379,7 @@ fn decode_avif_fallback(
     if !file.is_file() {
         return Err(localized(
             &lang,
-            format!("Arquivo nao encontrado: {}", file.display()),
+            format!("Arquivo não encontrado: {}", file.display()),
             format!("File not found: {}", file.display()),
         ));
     }
@@ -320,7 +387,7 @@ fn decode_avif_fallback(
     if ext != "avif" {
         return Err(localized(
             &lang,
-            format!("Formato nao suportado: .{ext}"),
+            format!("Formato não suportado: .{ext}"),
             format!("Unsupported format: .{ext}"),
         ));
     }
@@ -329,14 +396,27 @@ fn decode_avif_fallback(
 }
 
 #[tauri::command]
-fn list_siblings(path: String) -> Result<Vec<FileEntry>, String> {
+fn list_siblings(
+    path: String,
+    state: tauri::State<'_, AppState>,
+) -> Result<Vec<FileEntry>, String> {
+    let lang = app_lang(&state);
     let file = PathBuf::from(&path);
-    let dir = file
-        .parent()
-        .ok_or_else(|| "Arquivo sem pasta pai".to_string())?;
+    let dir = file.parent().ok_or_else(|| {
+        localized(
+            &lang,
+            "Arquivo sem pasta pai".to_string(),
+            "File has no parent folder".to_string(),
+        )
+    })?;
     let mut entries = Vec::new();
-    let read = std::fs::read_dir(dir)
-        .map_err(|e| format!("Nao foi possivel listar '{}': {e}", dir.display()))?;
+    let read = std::fs::read_dir(dir).map_err(|e| {
+        localized(
+            &lang,
+            format!("Não foi possível listar '{}': {e}", dir.display()),
+            format!("Could not list '{}': {e}", dir.display()),
+        )
+    })?;
     for entry in read.flatten() {
         let p = entry.path();
         if is_supported(&p) {
@@ -395,7 +475,7 @@ fn record_view(state: tauri::State<'_, AppState>) -> Result<u32, String> {
     let mut settings = state
         .settings
         .lock()
-        .map_err(|_| "Configuracao indisponivel".to_string())?;
+        .map_err(|_| "Configuração indisponível".to_string())?;
     settings.view_count = settings.view_count.saturating_add(1);
     let count = settings.view_count;
     let snapshot = settings.clone();
@@ -421,10 +501,15 @@ fn app_info() -> AppInfo {
 
 /// Abre a pasta do arquivo no gerenciador de arquivos do sistema (cross-platform).
 #[tauri::command]
-fn reveal_in_folder(path: String) -> Result<(), String> {
+fn reveal_in_folder(path: String, state: tauri::State<'_, AppState>) -> Result<(), String> {
+    let lang = app_lang(&state);
     let file = PathBuf::from(&path);
     if !is_supported(&file) {
-        return Err(format!("Arquivo nao suportado: {}", file.display()));
+        return Err(localized(
+            &lang,
+            format!("Arquivo não suportado: {}", file.display()),
+            format!("Unsupported file: {}", file.display()),
+        ));
     }
     let folder = file
         .parent()
@@ -442,17 +527,26 @@ fn reveal_in_folder(path: String) -> Result<(), String> {
     #[cfg(all(unix, not(target_os = "macos")))]
     let result = std::process::Command::new("xdg-open").arg(&folder).spawn();
 
-    result
-        .map(|_| ())
-        .map_err(|e| format!("Falha ao abrir a pasta: {e}"))
+    result.map(|_| ()).map_err(|e| {
+        localized(
+            &lang,
+            format!("Falha ao abrir a pasta: {e}"),
+            format!("Failed to open folder: {e}"),
+        )
+    })
 }
 
 /// Abre o dialogo "Abrir com..." do Windows. Em outras plataformas retorna erro.
 #[tauri::command]
-fn open_with_dialog(path: String) -> Result<(), String> {
+fn open_with_dialog(path: String, state: tauri::State<'_, AppState>) -> Result<(), String> {
+    let lang = app_lang(&state);
     let file = PathBuf::from(&path);
     if !is_supported(&file) {
-        return Err(format!("Arquivo nao suportado: {}", file.display()));
+        return Err(localized(
+            &lang,
+            format!("Arquivo não suportado: {}", file.display()),
+            format!("Unsupported file: {}", file.display()),
+        ));
     }
 
     #[cfg(target_os = "windows")]
@@ -462,21 +556,42 @@ fn open_with_dialog(path: String) -> Result<(), String> {
             .arg(&file)
             .spawn()
             .map(|_| ())
-            .map_err(|e| format!("Falha ao abrir 'Abrir com...': {e}"))
+            .map_err(|e| {
+                localized(
+                    &lang,
+                    format!("Falha ao abrir 'Abrir com…': {e}"),
+                    format!("Failed to open 'Open with…': {e}"),
+                )
+            })
     }
 
     #[cfg(not(target_os = "windows"))]
     {
-        Err("'Abrir com...' esta disponivel apenas no Windows".into())
+        Err(localized(
+            &lang,
+            "'Abrir com…' está disponível apenas no Windows".to_string(),
+            "'Open with…' is only available on Windows".to_string(),
+        ))
     }
 }
 
 #[tauri::command]
-fn open_url(url: String) -> Result<(), String> {
+fn open_url(url: String, state: tauri::State<'_, AppState>) -> Result<(), String> {
+    let lang = app_lang(&state);
     if !is_allowed_url(&url) {
-        return Err("URL nao permitida pelo AVIFnim Viewer".into());
+        return Err(localized(
+            &lang,
+            "URL não permitida pelo AVIFnim Viewer".to_string(),
+            "URL not allowed by AVIFnim Viewer".to_string(),
+        ));
     }
-    open::that(url).map_err(|e| format!("Falha ao abrir o navegador: {e}"))
+    open::that(url).map_err(|e| {
+        localized(
+            &lang,
+            format!("Falha ao abrir o navegador: {e}"),
+            format!("Failed to open browser: {e}"),
+        )
+    })
 }
 
 #[tauri::command]
@@ -485,8 +600,13 @@ fn get_association_states() -> HashMap<String, bool> {
 }
 
 #[tauri::command]
-fn set_association(group: String, enabled: bool) -> Result<bool, String> {
-    assoc::set_association(&group, enabled)
+fn set_association(
+    group: String,
+    enabled: bool,
+    state: tauri::State<'_, AppState>,
+) -> Result<bool, String> {
+    let lang = app_lang(&state);
+    assoc::set_association(&group, enabled).map_err(|err| localize_known_error(err, &lang))
 }
 
 #[tauri::command]
@@ -495,15 +615,25 @@ fn avifnim_installed() -> bool {
 }
 
 #[tauri::command]
-fn open_default_apps_settings() -> Result<(), String> {
+fn open_default_apps_settings(state: tauri::State<'_, AppState>) -> Result<(), String> {
+    let lang = app_lang(&state);
     #[cfg(windows)]
     {
-        open::that("ms-settings:defaultapps")
-            .map_err(|e| format!("Falha ao abrir as configuracoes do Windows: {e}"))
+        open::that("ms-settings:defaultapps").map_err(|e| {
+            localized(
+                &lang,
+                format!("Falha ao abrir as configurações do Windows: {e}"),
+                format!("Failed to open Windows settings: {e}"),
+            )
+        })
     }
     #[cfg(not(windows))]
     {
-        Err("Recurso disponivel apenas no Windows".into())
+        Err(localized(
+            &lang,
+            "Recurso disponível apenas no Windows".to_string(),
+            "Feature only available on Windows".to_string(),
+        ))
     }
 }
 
@@ -641,6 +771,44 @@ fn handle_run_event(app: &tauri::AppHandle, event: &tauri::RunEvent) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn localizes_platform_errors_to_english() {
+        let cases = [
+            (
+                "Associações de arquivo são gerenciadas pelo sistema operacional nesta plataforma",
+                "File associations are managed by the operating system",
+            ),
+            (
+                "Recurso disponível apenas no Windows",
+                "Feature only available on Windows",
+            ),
+            (
+                "'Abrir com…' está disponível apenas no Windows",
+                "is only available on Windows",
+            ),
+            (
+                "URL não permitida pelo AVIFnim Viewer",
+                "URL not allowed by AVIFnim Viewer",
+            ),
+        ];
+        for (pt, expected) in cases {
+            let out = localize_known_error(pt.to_string(), "en");
+            assert!(out.contains(expected), "{pt} -> {out}");
+        }
+    }
+
+    #[test]
+    fn keeps_portuguese_platform_errors() {
+        let pt = "Recurso disponível apenas no Windows";
+        assert_eq!(localize_known_error(pt.to_string(), "pt"), pt);
+    }
+
+    #[test]
+    fn localizes_assoc_group_error() {
+        let out = localize_known_error("Grupo de associação desconhecido: avif".to_string(), "en");
+        assert_eq!(out, "Unknown association group: avif");
+    }
 
     #[test]
     fn natural_sort_orders_frames() {

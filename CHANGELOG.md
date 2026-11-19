@@ -25,6 +25,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Fallback AVIF nativo**: quando o webview não decodifica AVIF (ex.: WebKitGTK do Mint sem suporte),
   o app decodifica **still e animação** em Rust puro (`avif-rust`, MIT), respeita as durações dos
   frames e toca pelo player de sequência — sem FFmpeg/GPL.
+- **Mensagens de erro traduzidas e acentuadas**: recursos só de plataforma (associações de arquivo,
+  “Abrir com…”, configurações padrão do Windows, abrir pasta/links) agora respondem em PT-BR com
+  acentuação correta e em inglês quando a interface está em EN; diálogo de abrir arquivo também.
 - **Barra de erro some ao trocar de imagem**: a mensagem antiga não fica mais sobre a próxima
   imagem quando ela é válida.
 - **Atalho automático na área de trabalho (Linux)**: `postinst` do `.deb` cria
