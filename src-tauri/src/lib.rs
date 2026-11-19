@@ -1,4 +1,5 @@
 mod assoc;
+mod avif_fallback;
 mod cache;
 mod config;
 pub mod pnm;
@@ -302,6 +303,32 @@ fn load_image(path: String, state: tauri::State<'_, AppState>) -> Result<ImageDa
 }
 
 #[tauri::command]
+fn decode_avif_fallback(
+    path: String,
+    state: tauri::State<'_, AppState>,
+) -> Result<avif_fallback::AvifPayload, String> {
+    let file = PathBuf::from(&path);
+    let lang = app_lang(&state);
+    if !file.is_file() {
+        return Err(localized(
+            &lang,
+            format!("Arquivo nao encontrado: {}", file.display()),
+            format!("File not found: {}", file.display()),
+        ));
+    }
+    let ext = ext_lower(&file);
+    if ext != "avif" {
+        return Err(localized(
+            &lang,
+            format!("Formato nao suportado: .{ext}"),
+            format!("Unsupported format: .{ext}"),
+        ));
+    }
+    let bytes = read_file_cached(&state, &file, &lang)?;
+    avif_fallback::decode(&bytes, &lang)
+}
+
+#[tauri::command]
 fn list_siblings(path: String) -> Result<Vec<FileEntry>, String> {
     let file = PathBuf::from(&path);
     let dir = file
@@ -572,6 +599,7 @@ pub fn run() {
             initial_arg,
             open_file_dialog,
             load_image,
+            decode_avif_fallback,
             list_siblings,
             prefetch,
             clear_cache,

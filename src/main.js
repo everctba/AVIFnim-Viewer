@@ -303,6 +303,7 @@ const state = {
   benchFrames: 0,
   benchStart: 0,
   imageErrorShown: false,
+  avifFallbackTried: false,
   ctxOpen: false,
   platform: "windows",
 };
@@ -496,6 +497,7 @@ async function showCurrent() {
     const data = await invoke("load_image", { path: entry.path });
     state.current = data;
     state.imageErrorShown = false;
+    state.avifFallbackTried = false;
     if (!hadImage || state.settings.reset_view_on_navigate !== false) {
       resetView();
     }
@@ -537,6 +539,43 @@ async function showCurrent() {
     }
   } catch (err) {
     showError(err);
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* ---------------- fallback AVIF (webview sem decoder) ---------------- */
+
+async function playAvifFallback(path) {
+  setBusy(true);
+  try {
+    const payload = await invoke("decode_avif_fallback", { path });
+    if (!state.current || !samePath(state.current.path, path)) return;
+    const frames = (payload.frames || []).map((frame) => frame.dataUrl);
+    const durations = (payload.frames || []).map((frame) => frame.durationMs);
+    if (!frames.length) throw new Error(t("error.decode"));
+
+    state.current.width = payload.width;
+    state.current.height = payload.height;
+    state.current.animated = !!payload.animated;
+    state.current.mime = "image/png";
+
+    const img = $("viewer-img");
+    img.classList.remove("hidden");
+    img.src = frames[0];
+    img.alt = state.current.name;
+    $("dropzone").classList.add("hidden");
+    $("viewport").classList.remove("hidden");
+    updateChrome();
+    updateInfo();
+    updateBanner();
+    if (frames.length > 1) startSequence(frames, 0, durations);
+    updateZoomLabel();
+  } catch (err) {
+    if (!state.current || !samePath(state.current.path, path)) return;
+    state.imageErrorShown = true;
+    $("viewer-img").classList.add("hidden");
+    showError(typeof err === "string" ? err : t("error.decode"));
   } finally {
     setBusy(false);
   }
@@ -623,11 +662,13 @@ function startSequenceIfDetected() {
   startSequence(frames.map((entry) => entry.path), start);
 }
 
-function startSequence(frames, startIndex) {
+function startSequence(frames, startIndex, durations) {
   state.seq = {
     frames,
     idx: ((startIndex % frames.length) + frames.length) % frames.length,
     fps: state.settings.seq_fps === 30 ? 30 : 60,
+    durations:
+      Array.isArray(durations) && durations.length === frames.length ? durations : null,
   };
   state.seqBuffer.clear();
   $("seq-bar").classList.remove("hidden");
@@ -657,7 +698,13 @@ function startSequence(frames, startIndex) {
 
 function updateSeqBar() {
   if (!state.seq) return;
-  $("seq-info").textContent = tf("seq.bar", { n: state.seq.frames.length, fps: state.seq.fps });
+  let fps = state.seq.fps;
+  if (state.seq.durations) {
+    const total = state.seq.durations.reduce((sum, ms) => sum + ms, 0);
+    const avg = total / state.seq.durations.length;
+    fps = Math.max(1, Math.round(1000 / Math.max(1, avg)));
+  }
+  $("seq-info").textContent = tf("seq.bar", { n: state.seq.frames.length, fps });
 }
 
 function stopSequence() {
@@ -674,25 +721,33 @@ function seqTick() {
   const seq = state.seq;
   if (!seq) return;
   if (state.bench) state.benchFrames += 1;
-  const path = seq.frames[seq.idx];
-  const cached = state.seqBuffer.get(path);
+  const frame = seq.frames[seq.idx];
   const img = $("viewer-img");
-  if (cached) {
-    img.src = cached;
+  if (seq.durations) {
+    // Fallback AVIF: frames ja sao data URLs PNG.
+    img.src = frame;
   } else {
-    loadSeqFrame(path).then((url) => {
-      if (url && state.seq === seq) img.src = url;
-    });
+    const cached = state.seqBuffer.get(frame);
+    if (cached) {
+      img.src = cached;
+    } else {
+      loadSeqFrame(frame).then((url) => {
+        if (url && state.seq === seq) img.src = url;
+      });
+    }
   }
+  const frameDelay = seq.durations
+    ? Math.min(2000, Math.max(16, seq.durations[seq.idx]))
+    : null;
   seq.idx = (seq.idx + 1) % seq.frames.length;
-  fillSeqBuffer();
-  const delay = Math.max(12, Math.round(1000 / seq.fps));
+  if (!seq.durations) fillSeqBuffer();
+  const delay = frameDelay || Math.max(12, Math.round(1000 / seq.fps));
   state.seqTimer = setTimeout(seqTick, delay);
 }
 
 function fillSeqBuffer() {
   const seq = state.seq;
-  if (!seq) return;
+  if (!seq || seq.durations) return;
   while (state.seqLoads < 3) {
     let missing = null;
     for (let k = 0; k < PRELOAD_AHEAD; k++) {
@@ -715,6 +770,7 @@ function fillSeqBuffer() {
 }
 
 function loadSeqFrame(path) {
+  if (String(path).startsWith("data:")) return Promise.resolve(path);
   const cached = state.seqBuffer.get(path);
   if (cached) return Promise.resolve(cached);
   return invoke("load_image", { path })
@@ -1569,6 +1625,12 @@ function bindUi() {
   // Arquivo "abriu" mas o webview nao conseguiu decodificar (corrompido/nao suportado).
   $("viewer-img").addEventListener("error", () => {
     if (!state.current || state.imageErrorShown) return;
+    // Fallback: em Linux o WebKitGTK pode nao ter decoder AVIF (still ou animado).
+    if (extOf(state.current.path) === "avif" && !state.avifFallbackTried) {
+      state.avifFallbackTried = true;
+      playAvifFallback(state.current.path);
+      return;
+    }
     state.imageErrorShown = true;
     $("viewer-img").classList.add("hidden");
     showError(t("error.decode"));

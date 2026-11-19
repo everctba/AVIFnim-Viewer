@@ -104,6 +104,8 @@ cd src-tauri && cargo test
 Cobertura: decode PNM P1–P6 (8/16-bit), headers inválidos, caps de pixels, cache LRU do prefetch,
 ordenação natural, parsing de argumentos, roundtrip de configurações (incluindo BOM) e
 roundtrip de associação no registro do Windows.
+Fallback AVIF (`avif-rust`): still e animado (8 frames, 96×64, 100 ms/frame) com durações e erros
+localizados.
 
 ### Property tests (proptest)
 

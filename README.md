@@ -57,7 +57,7 @@ Os instaladores também ficam na pasta local [`dist/`](dist/README.md) após o b
 
 ## Recursos
 
-- Abre e toca em loop **AVIF animado/still, WebP animado/still e GIF** usando o webview do sistema.
+- Abre e toca em loop **AVIF animado/still, WebP animado/still e GIF** usando o webview do sistema; quando o webview não tem decoder AVIF (ex.: WebKitGTK do Mint), um **fallback nativo em Rust (`avif-rust`, MIT)** decodifica still e animação e toca os frames no player de sequência.
 - Decodifica **PPM/PNM (P1–P6, 8/16-bit)** em Rust puro (crate `image`, sem FFmpeg/GPL) e exibe como PNG.
 - **Navegação** próximo/anterior na pasta com ordenação natural (`frame_2` antes de `frame_10`) e setas do teclado.
 - **Prefetch bidirecional** de bytes (janela ±N, LRU, teto configurável de memória, default 128 MB).

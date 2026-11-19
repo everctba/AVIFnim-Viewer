@@ -22,6 +22,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Tema com apenas 2 estados (Claro/Escuro)**: removido “Seguir o sistema” e o fundo independente
   (cinza); o tema controla a interface inteira, incluindo o fundo da área da imagem — no dark a barra
   fica escura. O botão de tema na barra inferior alterna Claro ↔ Escuro.
+- **Fallback AVIF nativo**: quando o webview não decodifica AVIF (ex.: WebKitGTK do Mint sem suporte),
+  o app decodifica **still e animação** em Rust puro (`avif-rust`, MIT), respeita as durações dos
+  frames e toca pelo player de sequência — sem FFmpeg/GPL.
 
 ### Segurança
 

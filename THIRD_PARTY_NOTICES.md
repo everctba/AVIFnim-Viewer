@@ -14,6 +14,9 @@ na v1.
 | [serde](https://serde.rs/) / serde_json | MIT / Apache-2.0 | serialização |
 | [base64](https://crates.io/crates/base64) | MIT / Apache-2.0 | encoding das imagens para o webview |
 | [image](https://crates.io/crates/image) | MIT / Apache-2.0 | decode PNM/PPM (P1–P6) e encode PNG |
+| [avif-rust](https://crates.io/crates/avif-rust) | MIT | fallback nativo de decode AVIF (still + animado) quando o webview não suporta |
+| [avif-image-buffer](https://crates.io/crates/avif-image-buffer) | MIT | buffers RGBA do fallback AVIF |
+| [bin-rs](https://crates.io/crates/bin-rs) | MIT | leitura binária do container AVIF |
 | [rfd](https://crates.io/crates/rfd) | MIT | diálogo nativo de abrir arquivo |
 | [open](https://crates.io/crates/open) | MIT | abrir links no navegador/SO |
 | [winreg](https://crates.io/crates/winreg) | MIT | associações opt-in no registro (Windows) |
@@ -35,8 +38,8 @@ na v1.
 
 ## Notas
 
-- O decode de AVIF/WebP/GIF é feito pelo **webview do sistema** — nenhum decoder adicional
-  proprietário é embarcado.
-- Se no futuro entrar um decoder próprio ou FFmpeg, os avisos e a política de licenciamento
-  deverão ser atualizados (mesma estratégia do AVIFnim: processo separado + notices).
+- AVIF/WebP/GIF são decodificados pelo **webview do sistema**; quando o webview não tem decoder
+  AVIF, o app usa **avif-rust (MIT, Rust puro)** como fallback — sem FFmpeg/GPL.
+- Novos decoders/formatos devem atualizar esta lista e a política de licenciamento (mesma estratégia
+  do AVIFnim: processo separado + notices).
 - Lista completa de dependências Rust: `src-tauri/Cargo.toml` e `Cargo.lock`.
