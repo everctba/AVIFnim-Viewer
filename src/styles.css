@@ -734,8 +734,9 @@ html[data-theme="light"] .dz-logo {
   font-size: 16px;
 }
 
-/* Sobre: faixa colorida (fita-cor) como fundo do titulo. */
-#about-modal .modal-head {
+/* Sobre + promo: faixa colorida (fita-cor) como fundo do titulo. */
+#about-modal .modal-head,
+#promo-modal .modal-head {
   background-image: linear-gradient(90deg,
       rgba(8, 8, 12, .52) 0%,
       rgba(8, 8, 12, .08) 55%,
@@ -744,19 +745,22 @@ html[data-theme="light"] .dz-logo {
   background-position: center;
 }
 
-#about-modal .modal-head h2 {
+#about-modal .modal-head h2,
+#promo-modal .modal-head h2 {
   text-shadow: 0 1px 3px rgba(0, 0, 0, .65);
 }
 
-/* Tema claro: fita clara no titulo do Sobre */
-html[data-theme="light"] #about-modal .modal-head {
+/* Tema claro: fita clara no titulo do Sobre e do promo */
+html[data-theme="light"] #about-modal .modal-head,
+html[data-theme="light"] #promo-modal .modal-head {
   background-image: linear-gradient(90deg,
       rgba(255, 255, 255, .45) 0%,
       rgba(255, 255, 255, .12) 55%,
       rgba(255, 255, 255, .35) 100%), url("assets/fita-cor-branca.png");
 }
 
-html[data-theme="light"] #about-modal .modal-head h2 {
+html[data-theme="light"] #about-modal .modal-head h2,
+html[data-theme="light"] #promo-modal .modal-head h2 {
   color: var(--text);
   text-shadow: 0 1px 2px rgba(255, 255, 255, .75);
 }

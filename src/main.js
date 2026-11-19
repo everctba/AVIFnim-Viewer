@@ -125,7 +125,6 @@ const I18N = {
 
     "promo.title": "Este é o AVIFnim Viewer",
     "promo.text": "Gostou de ver AVIF animado? O AVIFnim é o conversor que cria AVIF animado a partir de sequências, vídeo e gravação de tela.",
-    "promo.note": "Este aviso aparece uma única vez.",
     "promo.never": "Não mostrar novamente",
     "promo.cta": "Conhecer o AVIFnim",
 
@@ -248,7 +247,6 @@ const I18N = {
 
     "promo.title": "This is AVIFnim Viewer",
     "promo.text": "Enjoyed seeing animated AVIF? AVIFnim is the converter that creates animated AVIF from sequences, video and screen recordings.",
-    "promo.note": "This notice appears only once.",
     "promo.never": "Don't show again",
     "promo.cta": "Meet AVIFnim",
 
