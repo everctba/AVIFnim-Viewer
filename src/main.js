@@ -39,7 +39,7 @@ const I18N = {
     "toolbar.zoomIn": "Aumentar zoom (+)",
     "toolbar.fit": "Fit",
     "toolbar.actual": "Tamanho real (100%)",
-    "toolbar.fullscreen": "Tela cheia (F)",
+    "toolbar.fullscreen": "Tela cheia (F11)",
     "toolbar.background": "Alternar tema claro/escuro",
     "toolbar.checker": "Checkerboard de transparência",
     "toolbar.info": "Informações (I)",
@@ -106,14 +106,17 @@ const I18N = {
     "about.license": "Licença",
     "about.free": "gratuito e open source",
     "about.promo.title": "Conheça o AVIFnim",
-    "about.promo.text": "Converta sequências, vídeo e gravação de tela para AVIF animado. O conversor que combina com este visualizador.",
-    "about.promo.cta": "Conheça o AVIFnim",
+    "about.promo.text": "Transforme sequências, vídeos e gravações de tela em AVIF animado.",
+    "about.promo.cta": "Conheça!",
     "about.author": "Autor",
     "about.email": "E-mail",
     "about.site": "Site",
     "about.repo": "Repositório",
     "about.donate": "Colabore com o autor",
     "about.donate.pending": "QR codes do PayPal e do PIX serão adicionados em breve.",
+    "about.donate.title": "Apoie o desenvolvedor",
+    "about.donate.paypalHint": "botão leva ao PayPal.",
+    "about.donate.cta": "Doar",
     "about.limits": "Limitações conhecidas",
     "about.limits.loop": "Arquivos com loop count 1x tocam uma vez e param (comportamento do formato).",
     "about.limits.fps": "O FPS efetivo depende do webview do sistema.",
@@ -159,7 +162,7 @@ const I18N = {
     "toolbar.zoomIn": "Zoom in (+)",
     "toolbar.fit": "Fit",
     "toolbar.actual": "Actual size (100%)",
-    "toolbar.fullscreen": "Fullscreen (F)",
+    "toolbar.fullscreen": "Fullscreen (F11)",
     "toolbar.background": "Toggle light/dark theme",
     "toolbar.checker": "Transparency checkerboard",
     "toolbar.info": "Info (I)",
@@ -226,14 +229,17 @@ const I18N = {
     "about.license": "License",
     "about.free": "free and open source",
     "about.promo.title": "Meet AVIFnim",
-    "about.promo.text": "Convert sequences, video and screen recordings to animated AVIF. The converter that goes with this viewer.",
-    "about.promo.cta": "Meet AVIFnim",
+    "about.promo.text": "Turn sequences, videos and screen recordings into animated AVIF.",
+    "about.promo.cta": "Check it out!",
     "about.author": "Author",
     "about.email": "Email",
     "about.site": "Website",
     "about.repo": "Repository",
     "about.donate": "Support the author",
     "about.donate.pending": "PayPal and PIX QR codes will be added soon.",
+    "about.donate.title": "Support the developer",
+    "about.donate.paypalHint": "button opens PayPal.",
+    "about.donate.cta": "Donate",
     "about.limits": "Known limitations",
     "about.limits.loop": "Files with loop count 1x play once and stop (format behavior).",
     "about.limits.fps": "Effective FPS depends on the system webview.",
@@ -435,7 +441,11 @@ async function loadAppInfo() {
     const version = $("about-version");
     if (version && state.appInfo) version.textContent = "v" + state.appInfo.version;
     const site = $("about-site");
-    if (site && state.appInfo) site.textContent = state.appInfo.siteUrl || "—";
+    if (site && state.appInfo) {
+      const host = (state.appInfo.siteUrl || "").replace(/^https?:\/\//, "");
+      site.textContent = host || "—";
+      if (state.appInfo.siteUrl) site.setAttribute("href", state.appInfo.siteUrl);
+    }
     applyPlatformMenu();
   } catch (err) {
     console.warn("app_info", err);
@@ -1127,7 +1137,8 @@ function fillAbout() {
   const info = state.appInfo;
   if (!info) return;
   $("about-version").textContent = "v" + info.version;
-  $("about-site").textContent = info.siteUrl || "—";
+  $("about-site").textContent = (info.siteUrl || "").replace(/^https?:\/\//, "") || "—";
+  if (info.siteUrl) $("about-site").setAttribute("href", info.siteUrl);
   const cta = $("about-avifnim-cta");
   cta.disabled = !info.avifnimUrl;
   cta.title = info.avifnimUrl ? "" : t("toast.linkPending");
@@ -1312,6 +1323,7 @@ function setupKeyboard() {
         break;
       case "f":
       case "F":
+      case "F11":
         event.preventDefault();
         toggleFullscreen();
         break;
@@ -1351,6 +1363,51 @@ function toggleInfo() {
   } else {
     panel.classList.add("hidden");
   }
+}
+
+function setupClickToAdvance() {
+  const viewport = $("viewport");
+  let downX = 0;
+  let downY = 0;
+  let moved = false;
+  let advanceTimer = null;
+
+  viewport.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    downX = event.clientX;
+    downY = event.clientY;
+    moved = false;
+  });
+
+  viewport.addEventListener("pointermove", (event) => {
+    if (!event.buttons) return;
+    if (Math.abs(event.clientX - downX) > 6 || Math.abs(event.clientY - downY) > 6) {
+      moved = true;
+    }
+  });
+
+  // Um clique simples avanca para a proxima imagem; um duplo clique continua alternando
+  // Fit/100%, entao o avanco espera para nao disparar junto com o duplo clique.
+  viewport.addEventListener("click", (event) => {
+    if (event.button !== 0 || !state.current || moved) return;
+    if (event.target.closest("#ctx-menu")) return;
+    // Segundo clique de um duplo clique: nao agenda avanco (o dblclick cuida do Fit/100%).
+    if (event.detail > 1) {
+      clearTimeout(advanceTimer);
+      advanceTimer = null;
+      return;
+    }
+    clearTimeout(advanceTimer);
+    advanceTimer = setTimeout(() => {
+      advanceTimer = null;
+      if (state.siblings.length > 1) navigate(1);
+    }, 300);
+  });
+
+  viewport.addEventListener("dblclick", () => {
+    clearTimeout(advanceTimer);
+    advanceTimer = null;
+  });
 }
 
 function setupPointerPan() {
@@ -1412,7 +1469,7 @@ function bindUi() {
   $("promo-dismiss").addEventListener("click", () => closeModal("promo-modal"));
   $("promo-cta").addEventListener("click", openAvifnim);
   $("about-avifnim-cta").addEventListener("click", openAvifnim);
-  $("promo-art").addEventListener("click", openAvifnim);
+  $("promo-logo").addEventListener("click", openAvifnim);
 
   $("banner-close").addEventListener("click", () => {
     state.bannerDismissedSession = true;
@@ -1465,23 +1522,47 @@ function bindUi() {
   });
   $("btn-reset-all").addEventListener("click", resetAllSettings);
 
-  $("about-repo").addEventListener("click", (event) => {
+  // Elementos opcionais: o About pode ser editado sem estes links; nao quebrar os bindings.
+  const aboutRepo = $("about-repo");
+  if (aboutRepo) {
+    aboutRepo.addEventListener("click", (event) => {
+      event.preventDefault();
+      const url = state.appInfo && state.appInfo.repoUrl;
+      if (url) invoke("open_url", { url }).catch((err) => toast(String(err)));
+    });
+  }
+  const aboutRepoLink = $("about-repo-link");
+  if (aboutRepoLink) {
+    aboutRepoLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      const url = state.appInfo && state.appInfo.repoUrl;
+      if (url) invoke("open_url", { url }).catch((err) => toast(String(err)));
+    });
+  }
+  $("about-site").addEventListener("click", (event) => {
     event.preventDefault();
-    const url = state.appInfo && state.appInfo.repoUrl;
+    const url = state.appInfo && state.appInfo.siteUrl;
     if (url) invoke("open_url", { url }).catch((err) => toast(String(err)));
   });
-  $("about-repo-link").addEventListener("click", (event) => {
-    event.preventDefault();
-    const url = state.appInfo && state.appInfo.repoUrl;
-    if (url) invoke("open_url", { url }).catch((err) => toast(String(err)));
-  });
-  $("about-email").addEventListener("click", (event) => {
-    event.preventDefault();
-    const email = (state.appInfo && state.appInfo.email) || "mayerdesigner@gmail.com";
-    invoke("open_url", { url: "mailto:" + email }).catch(() => {});
-  });
+  const aboutEmail = $("about-email");
+  if (aboutEmail) {
+    aboutEmail.addEventListener("click", (event) => {
+      event.preventDefault();
+      const email = (state.appInfo && state.appInfo.email) || "mayerdesigner@gmail.com";
+      invoke("open_url", { url: "mailto:" + email }).catch(() => {});
+    });
+  }
+  const paypalDonate = $("paypal-donate");
+  if (paypalDonate) {
+    paypalDonate.addEventListener("click", () => {
+      const url =
+        "https://www.paypal.com/donate/?business=mayerdesigner%40gmail.com&currency_code=USD&amount=5.00";
+      invoke("open_url", { url }).catch((err) => toast(String(err)));
+    });
+  }
 
   setupPointerPan();
+  setupClickToAdvance();
   setupContextMenu();
   setupFullscreenMode();
 

@@ -1,7 +1,7 @@
 mod assoc;
 mod cache;
 mod config;
-mod pnm;
+pub mod pnm;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -19,15 +19,23 @@ const SUPPORTED_EXTS: &[&str] = &[
 ];
 const MAX_FILE_BYTES: u64 = 256 * 1024 * 1024;
 
-// URLs ainda pendentes de definicao pelo owner (issues avifnim-xhk / avifnim-b7e).
+// URLs oficiais do projeto.
 const REPO_URL: &str = "https://github.com/everctba/AVIFnim-Viewer";
-const SITE_URL: &str = "";
-const AVIFNIM_URL: &str = "";
+const SITE_URL: &str = "https://avifnim.com.br";
+const AVIFNIM_URL: &str = "https://avifnim.com.br";
+// Pagina de doacao (PayPal). O sufixo "/" permite query string (business, amount, currency).
+const PAYPAL_URL: &str = "https://www.paypal.com/donate/";
 
 /// Allowlist de URLs que o app pode abrir no navegador.
 /// Se um renderer for comprometido, `open_url` nao pode ser usado para exfiltrar dados
-/// abrindo URLs arbitrarias. Ao definir site/AVIFnim oficiais, adicione-os aqui.
-const ALLOWED_URLS: &[&str] = &[REPO_URL, "mailto:mayerdesigner@gmail.com"];
+/// abrindo URLs arbitrarias.
+const ALLOWED_URLS: &[&str] = &[
+    REPO_URL,
+    SITE_URL,
+    AVIFNIM_URL,
+    PAYPAL_URL,
+    "mailto:mayerdesigner@gmail.com",
+];
 
 fn is_allowed_url(url: &str) -> bool {
     if url.is_empty() || url.len() > 2048 {
@@ -146,32 +154,71 @@ fn b64(bytes: &[u8]) -> String {
     base64::engine::general_purpose::STANDARD.encode(bytes)
 }
 
-fn read_file_cached(state: &AppState, path: &Path) -> Result<Arc<Vec<u8>>, String> {
+fn app_lang(state: &AppState) -> String {
+    state
+        .settings
+        .lock()
+        .map(|s| s.lang.clone())
+        .unwrap_or_else(|_| "pt".to_string())
+}
+
+fn localized(lang: &str, pt: String, en: String) -> String {
+    if lang == "en" {
+        en
+    } else {
+        pt
+    }
+}
+
+fn read_file_cached(state: &AppState, path: &Path, lang: &str) -> Result<Arc<Vec<u8>>, String> {
     let key = path.to_string_lossy().into_owned();
     {
-        let mut cache = state
-            .cache
-            .lock()
-            .map_err(|_| "Cache indisponivel".to_string())?;
+        let mut cache = state.cache.lock().map_err(|_| {
+            localized(
+                lang,
+                "Cache indisponivel".to_string(),
+                "Cache unavailable".to_string(),
+            )
+        })?;
         if let Some(data) = cache.get(&key) {
             return Ok(data);
         }
     }
-    let meta = std::fs::metadata(path)
-        .map_err(|e| format!("Nao foi possivel acessar '{}': {e}", path.display()))?;
+    let meta = std::fs::metadata(path).map_err(|e| {
+        localized(
+            lang,
+            format!("Nao foi possivel acessar '{}': {e}", path.display()),
+            format!("Could not access '{}': {e}", path.display()),
+        )
+    })?;
     if meta.len() > MAX_FILE_BYTES {
-        return Err(format!(
-            "Arquivo muito grande ({} MB; limite de 256 MB)",
-            meta.len() / (1024 * 1024)
+        return Err(localized(
+            lang,
+            format!(
+                "Arquivo muito grande ({} MB; limite de 256 MB)",
+                meta.len() / (1024 * 1024)
+            ),
+            format!(
+                "File too large ({} MB; 256 MB limit)",
+                meta.len() / (1024 * 1024)
+            ),
         ));
     }
-    let bytes = std::fs::read(path)
-        .map_err(|e| format!("Nao foi possivel ler '{}': {e}", path.display()))?;
+    let bytes = std::fs::read(path).map_err(|e| {
+        localized(
+            lang,
+            format!("Nao foi possivel ler '{}': {e}", path.display()),
+            format!("Could not read '{}': {e}", path.display()),
+        )
+    })?;
     let arc = Arc::new(bytes);
-    let mut cache = state
-        .cache
-        .lock()
-        .map_err(|_| "Cache indisponivel".to_string())?;
+    let mut cache = state.cache.lock().map_err(|_| {
+        localized(
+            lang,
+            "Cache indisponivel".to_string(),
+            "Cache unavailable".to_string(),
+        )
+    })?;
     cache.put(key, arc.clone());
     Ok(arc)
 }
@@ -214,16 +261,25 @@ fn open_file_dialog() -> Option<String> {
 #[tauri::command]
 fn load_image(path: String, state: tauri::State<'_, AppState>) -> Result<ImageData, String> {
     let file = PathBuf::from(&path);
+    let lang = app_lang(&state);
     if !file.is_file() {
-        return Err(format!("Arquivo nao encontrado: {}", file.display()));
+        return Err(localized(
+            &lang,
+            format!("Arquivo nao encontrado: {}", file.display()),
+            format!("File not found: {}", file.display()),
+        ));
     }
     let ext = ext_lower(&file);
     if !SUPPORTED_EXTS.contains(&ext.as_str()) {
-        return Err(format!("Formato nao suportado: .{ext}"));
+        return Err(localized(
+            &lang,
+            format!("Formato nao suportado: .{ext}"),
+            format!("Unsupported format: .{ext}"),
+        ));
     }
-    let bytes = read_file_cached(&state, &file)?;
+    let bytes = read_file_cached(&state, &file, &lang)?;
     let (payload, mime, width, height) = if pnm::is_pnm_ext(&ext) {
-        let (png, w, h) = pnm::decode_pnm_to_png(&bytes)?;
+        let (png, w, h) = pnm::decode_pnm_to_png_lang(&bytes, &lang)?;
         (png, "image/png".to_string(), w, h)
     } else {
         (bytes.as_ref().clone(), mime_for(&ext).to_string(), 0, 0)
@@ -269,10 +325,11 @@ fn list_siblings(path: String) -> Result<Vec<FileEntry>, String> {
 
 #[tauri::command]
 fn prefetch(paths: Vec<String>, state: tauri::State<'_, AppState>) {
+    let lang = app_lang(&state);
     for path in paths {
         let p = PathBuf::from(&path);
         if is_supported(&p) {
-            let _ = read_file_cached(&state, &p);
+            let _ = read_file_cached(&state, &p, &lang);
         }
     }
 }
@@ -605,8 +662,18 @@ mod tests {
             "https://github.com/everctba/AVIFnim-Viewer/releases/tag/v0.1.1"
         ));
         assert!(is_allowed_url("mailto:mayerdesigner@gmail.com"));
+        assert!(is_allowed_url(SITE_URL));
+        assert!(is_allowed_url(AVIFNIM_URL));
+        assert!(is_allowed_url("https://avifnim.com.br/"));
+        assert!(is_allowed_url(PAYPAL_URL));
+        assert!(is_allowed_url(
+            "https://www.paypal.com/donate/?business=mayerdesigner%40gmail.com&currency_code=USD&amount=5.00"
+        ));
 
         assert!(!is_allowed_url("https://example.com/exfil?dados=secreto"));
+        assert!(!is_allowed_url("https://evil.avifnim.com.br"));
+        assert!(!is_allowed_url("https://www.paypal.com/donate.evil/?x=1"));
+        assert!(!is_allowed_url("https://www.paypal.com/signin"));
         assert!(!is_allowed_url("https://github.com/everctba/outro-repo"));
         assert!(!is_allowed_url("http://github.com/everctba/AVIFnim-Viewer"));
         assert!(!is_allowed_url("mailto:outro@example.com"));

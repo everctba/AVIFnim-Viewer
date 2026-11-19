@@ -81,6 +81,27 @@ fn settings_path(dir: &Path) -> std::path::PathBuf {
     dir.join("settings.json")
 }
 
+/// Converte o valor gravado pelo instalador ("en"/"pt") num idioma valido.
+fn installer_lang_value(value: &str) -> Option<&'static str> {
+    match value.trim().to_lowercase().as_str() {
+        "en" => Some("en"),
+        "pt" => Some("pt"),
+        _ => None,
+    }
+}
+
+/// Idioma escolhido no instalador NSIS (gravado em HKCU\Software\AVIFnim\AppLanguage).
+#[cfg(target_os = "windows")]
+fn installer_language() -> Option<&'static str> {
+    use winreg::enums::{HKEY_CURRENT_USER, KEY_READ};
+    let hkcu = winreg::RegKey::predef(HKEY_CURRENT_USER);
+    let key = hkcu
+        .open_subkey_with_flags("Software\\AVIFnim", KEY_READ)
+        .ok()?;
+    let value: String = key.get_value("AppLanguage").ok()?;
+    installer_lang_value(&value)
+}
+
 pub fn load(dir: &Path) -> Settings {
     let path = settings_path(dir);
     match std::fs::read(&path) {
@@ -93,7 +114,15 @@ pub fn load(dir: &Path) -> Settings {
                 .map(|s| s.normalized())
                 .unwrap_or_default()
         }
-        Err(_) => Settings::default(),
+        Err(_) => {
+            // Primeira execucao: respeita o idioma escolhido no instalador (Windows).
+            let mut settings = Settings::default();
+            #[cfg(target_os = "windows")]
+            if let Some(lang) = installer_language() {
+                settings.lang = lang.to_string();
+            }
+            settings.normalized()
+        }
     }
 }
 
@@ -173,5 +202,15 @@ mod tests {
         assert_eq!(normalized.lang, "pt");
         assert_eq!(normalized.prefetch_mb, 1024);
         assert_eq!(normalized.seq_fps, 60);
+    }
+
+    #[test]
+    fn parses_installer_language_value() {
+        assert_eq!(installer_lang_value("en"), Some("en"));
+        assert_eq!(installer_lang_value(" EN "), Some("en"));
+        assert_eq!(installer_lang_value("pt"), Some("pt"));
+        assert_eq!(installer_lang_value("PT-BR"), None);
+        assert_eq!(installer_lang_value("es"), None);
+        assert_eq!(installer_lang_value(""), None);
     }
 }

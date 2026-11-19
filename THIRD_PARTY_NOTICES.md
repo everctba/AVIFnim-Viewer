@@ -27,6 +27,12 @@ na v1.
 | WKWebView / WebKit | componentes do sistema | macOS |
 | WebKitGTK 4.1 | LGPL (biblioteca do sistema, não embarcada) | Linux |
 
+## Fontes
+
+| Componente | Licença | Uso |
+|---|---|---|
+| [Inter](https://rsms.me/inter/) (variable, woff2) | **SIL Open Font License 1.1** | tipografia da interface, embarcada em `src/assets/fonts/` (`LICENSE.txt`) |
+
 ## Notas
 
 - O decode de AVIF/WebP/GIF é feito pelo **webview do sistema** — nenhum decoder adicional

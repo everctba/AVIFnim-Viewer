@@ -102,6 +102,35 @@ jobs:
         shell: pwsh
         run: ./scripts/test-installer.ps1
 
+  fuzz-pnm:
+    name: Fuzz PNM parser (60s)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Rust toolchain (nightly, libFuzzer)
+        uses: dtolnay/rust-toolchain@39008827e6b4319a349e9a42dfc90579dd25f1ca # pin SHA
+        with:
+          toolchain: nightly
+
+      - name: Install cargo-fuzz
+        uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2
+        with:
+          tool: cargo-fuzz
+
+      - name: Fuzz pnm_decode (60s)
+        working-directory: src-tauri
+        run: cargo fuzz run pnm_decode -- -max_total_time=60 -rss_limit_mb=2048
+
+      - name: Upload fuzz artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fuzz-artifacts
+          path: src-tauri/fuzz/artifacts
+          if-no-files-found: ignore
+
   supply-chain:
     name: Supply chain (audit, deny, SBOM)
     runs-on: ubuntu-latest

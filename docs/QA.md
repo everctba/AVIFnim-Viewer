@@ -105,6 +105,32 @@ Cobertura: decode PNM P1–P6 (8/16-bit), headers inválidos, caps de pixels, ca
 ordenação natural, parsing de argumentos, roundtrip de configurações (incluindo BOM) e
 roundtrip de associação no registro do Windows.
 
+### Property tests (proptest)
+
+A suíte inclui **4 property tests** no parser PNM (`cargo test` já roda):
+
+- bytes arbitrários nunca causam panic/abort;
+- qualquer header (inclusive `u32::MAX`) respeita o cap de 100 MPix;
+- espaços, CRLF e comentários no header não mudam o resultado;
+- headers truncados retornam erro, nunca panic.
+
+### Fuzzing (cargo-fuzz)
+
+Alvo em `src-tauri/fuzz/fuzz_targets/pnm_decode.rs` (nightly + libFuzzer):
+
+```bash
+cd src-tauri
+cargo install cargo-fuzz        # uma vez
+cargo fuzz run pnm_decode -- -max_total_time=60 -rss_limit_mb=2048
+```
+
+Corpus inicial em `src-tauri/fuzz/corpus/pnm_decode/`. O CI roda 60 s por push no job
+`Fuzz PNM parser (60s)`; crashes encontrados viram artifacts e devem virar teste de regressão.
+
+> No Windows/MSVC o `cargo-fuzz` não consegue linkar o runtime do libFuzzer/ASAN
+> (`clang_rt.asan_...`), então o fuzzing roda no **CI (ubuntu)**; no Windows use os property
+> tests (`cargo test`).
+
 ## Limitações conhecidas (documentadas no app)
 
 - Loop count 1x toca uma vez e para.

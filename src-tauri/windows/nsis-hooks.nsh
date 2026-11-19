@@ -154,3 +154,33 @@ FunctionEnd
   DeleteRegValue HKCU "Software\Classes\.pbm\OpenWithProgids" "AVIFnimViewer.pnm"
   DeleteRegValue HKCU "Software\Classes\.pnm\OpenWithProgids" "AVIFnimViewer.pnm"
 !macroend
+
+; Idioma escolhido no instalador -> idioma inicial do app (lido apenas quando ainda
+; nao existe settings.json; depois disso a escolha do usuario em Configuracoes manda).
+; Aceita /LANG=1033 (English) e /LANG=1046 (PortugueseBR) tambem no modo silencioso,
+; onde o MUI ignora /LANG e usa o idioma do sistema.
+!macro NSIS_HOOK_POSTINSTALL
+  StrCpy $R1 ""
+  ${GetOptions} $CMDLINE "/LANG=" $R0
+  ${IfNot} ${Errors}
+    ${If} "$R0" == "1033"
+      StrCpy $R1 "en"
+    ${ElseIf} "$R0" == "1046"
+      StrCpy $R1 "pt"
+    ${ElseIf} "$R0" == "en"
+      StrCpy $R1 "en"
+    ${ElseIf} "$R0" == "pt"
+      StrCpy $R1 "pt"
+    ${EndIf}
+  ${EndIf}
+
+  ${If} "$R1" == ""
+    ${If} $LANGUAGE == ${LANG_ENGLISH}
+      StrCpy $R1 "en"
+    ${Else}
+      StrCpy $R1 "pt"
+    ${EndIf}
+  ${EndIf}
+
+  WriteRegStr HKCU "Software\AVIFnim" "AppLanguage" "$R1"
+!macroend

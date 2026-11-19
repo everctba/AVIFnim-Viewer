@@ -110,6 +110,132 @@ pub fn decode_pnm_to_png(bytes: &[u8]) -> Result<(Vec<u8>, u32, u32), String> {
     Ok((png, width, height))
 }
 
+/// Versao de [`decode_pnm_to_png`] que traduz as mensagens de erro conforme o idioma do app.
+pub fn decode_pnm_to_png_lang(bytes: &[u8], lang: &str) -> Result<(Vec<u8>, u32, u32), String> {
+    decode_pnm_to_png(bytes).map_err(|err| localize_pnm_error(err, lang))
+}
+
+fn localize_pnm_error(message: String, lang: &str) -> String {
+    if lang != "en" {
+        return message;
+    }
+    const STATIC_MSGS: &[(&str, &str)] = &[
+        (
+            "Cabecalho PNM invalido: numero esperado",
+            "Invalid PNM header: number expected",
+        ),
+        (
+            "Cabecalho PNM invalido: numero fora de faixa",
+            "Invalid PNM header: number out of range",
+        ),
+        ("Cabecalho PNM invalido", "Invalid PNM header"),
+        (
+            "Nao parece um arquivo PNM/PPM (falta o magic 'P')",
+            "Not a PNM/PPM file (missing 'P' magic)",
+        ),
+        (
+            "Arquivo PNM muito grande (limite de 256 MB)",
+            "PNM file too large (256 MB limit)",
+        ),
+        (
+            "Dimensoes PNM invalidas (0 x 0)",
+            "Invalid PNM dimensions (0 x 0)",
+        ),
+        (
+            "Cabecalho PNM nao confere com os dados da imagem",
+            "PNM header does not match image data",
+        ),
+    ];
+    for (pt, en) in STATIC_MSGS {
+        if message == *pt {
+            return (*en).to_string();
+        }
+    }
+    if let Some(rest) = message.strip_prefix("Formato PNM nao suportado: ") {
+        return format!("Unsupported PNM format: {rest}");
+    }
+    if let Some(rest) = message.strip_prefix("Falha ao reconhecer o PNM: ") {
+        return format!("Failed to recognize PNM: {rest}");
+    }
+    if let Some(rest) = message.strip_prefix("Falha ao decodificar PNM: ") {
+        return format!("Failed to decode PNM: {rest}");
+    }
+    if let Some(rest) = message.strip_prefix("Falha ao gerar PNG do PNM: ") {
+        return format!("Failed to generate PNG from PNM: {rest}");
+    }
+    if let Some(inner) = message
+        .strip_prefix("Imagem PNM grande demais (")
+        .and_then(|rest| rest.strip_suffix(")"))
+    {
+        let inner = inner.replace("; limite 100 MPix", "; 100 MPix limit");
+        return format!("PNM image too large ({inner})");
+    }
+    message
+}
+
+#[cfg(test)]
+mod proptests {
+    use super::*;
+    use proptest::prelude::*;
+
+    fn pnm_header(kind: u8, width: u32, height: u32, maxval: Option<u32>) -> Vec<u8> {
+        let mut text = format!("P{} {} {}", kind, width, height);
+        if let Some(maxval) = maxval {
+            text.push_str(&format!(" {}", maxval));
+        }
+        text.push('\n');
+        text.into_bytes()
+    }
+
+    proptest! {
+        // Nenhuma entrada arbitraria pode causar panic/abort no decoder.
+        #[test]
+        fn arbitrary_bytes_never_panic(bytes in proptest::collection::vec(any::<u8>(), 0..2048)) {
+            let _ = decode_pnm_to_png(&bytes);
+        }
+
+        // O cap de 100 MPix vale para qualquer header, inclusive valores u32 extremos.
+        #[test]
+        fn header_dimensions_always_within_cap(width in any::<u32>(), height in any::<u32>()) {
+            let mut data = pnm_header(6, width, height, Some(255));
+            data.extend_from_slice(&[0u8; 32]);
+            if let Ok(header) = parse_header(&data) {
+                prop_assert!(header.width > 0 && header.height > 0);
+                let pixels = header.width as u64 * header.height as u64;
+                prop_assert!(
+                    pixels <= MAX_PIXELS,
+                    "cap violado: {}x{} = {} px",
+                    header.width,
+                    header.height,
+                    pixels
+                );
+            }
+        }
+
+        // Espacos, CRLF e comentarios no header nao podem alterar o resultado.
+        #[test]
+        fn whitespace_and_comments_are_tolerated(width in 1u32..7, height in 1u32..7) {
+            let mut data = Vec::new();
+            data.extend_from_slice(b"P6\r\n# comentario do header\r\n");
+            data.extend_from_slice(format!("{}", width).as_bytes());
+            data.extend_from_slice(b"  # outro comentario\n ");
+            data.extend_from_slice(format!("{}", height).as_bytes());
+            data.extend_from_slice(b"\r\n255\r\n");
+            data.extend(std::iter::repeat(128u8).take(width as usize * height as usize * 3));
+            let (png, out_width, out_height) =
+                decode_pnm_to_png(&data).expect("P6 valido deve decodificar");
+            prop_assert_eq!((out_width, out_height), (width, height));
+            prop_assert!(png.starts_with(b"\x89PNG"));
+        }
+
+        // Headers truncados/curtos devem retornar Err, nunca panicar.
+        #[test]
+        fn truncated_headers_are_errors(prefix in proptest::collection::vec(any::<u8>(), 0..16)) {
+            let _ = decode_pnm_to_png(&prefix);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -209,5 +335,24 @@ mod tests {
         let (png, w, h) = decode_pnm_to_png(&bytes).expect("P6 16-bit deve decodificar");
         assert_eq!((w, h), (2, 2));
         assert!(png_magic_ok(&png));
+    }
+
+    #[test]
+    fn translates_pnm_errors_to_english() {
+        let err =
+            decode_pnm_to_png_lang(b"P6\n100000 100000\n255\n", "en").expect_err("deve falhar");
+        assert!(
+            err.contains("PNM image too large"),
+            "erro inesperado: {err}"
+        );
+
+        let err = decode_pnm_to_png_lang(b"P9\n2 2\n255\n", "en").expect_err("deve falhar");
+        assert!(
+            err.contains("Unsupported PNM format"),
+            "erro inesperado: {err}"
+        );
+
+        let pt = decode_pnm_to_png(b"P9\n2 2\n255\n").expect_err("deve falhar");
+        assert!(pt.contains("Formato PNM"), "erro inesperado: {pt}");
     }
 }

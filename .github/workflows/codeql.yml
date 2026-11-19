@@ -1,0 +1,39 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  schedule:
+    - cron: "23 3 * * 1" # toda segunda 03:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze-js:
+    name: CodeQL (JavaScript/TypeScript)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@b7b84b636b4f90c9b31da1bc5f72bfadd5b31410 # v3
+        with:
+          languages: javascript-typescript
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@b7b84b636b4f90c9b31da1bc5f72bfadd5b31410 # v3
+        with:
+          category: "/language:javascript-typescript"
+
+  # O backend Rust ainda nao tem job CodeQL: o extrator Rust do CodeQL esta em preview e o
+  # build exige o stack GTK/WebKit. Rust continua coberto por clippy (-D warnings),
+  # cargo audit e cargo deny no CI.

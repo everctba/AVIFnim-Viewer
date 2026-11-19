@@ -28,6 +28,9 @@ open = "5"
 [target.'cfg(windows)'.dependencies]
 winreg = "0.52"
 
+[dev-dependencies]
+proptest = "1"
+
 [profile.release]
 codegen-units = 1
 lto = true
