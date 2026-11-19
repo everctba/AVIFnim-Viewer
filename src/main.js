@@ -80,6 +80,7 @@ const I18N = {
     "settings.assoc.desc": "Opcional e desmarcado por padrão. O AVIFnim Viewer nunca assume seus formatos sozinho.",
     "settings.assoc.default": "Definir como padrão…",
     "settings.assoc.hint": "Abre as configurações do sistema; o app não altera o padrão silenciosamente.",
+    "settings.assoc.platformNote": "No Linux, as associações são definidas pelo sistema (menu “Abrir com” do gerenciador de arquivos). No macOS, use “Abrir com” → “Alterar tudo” no Finder.",
     "settings.appearance": "Aparência",
     "settings.theme": "Tema",
     "settings.lang": "Idioma",
@@ -205,6 +206,7 @@ const I18N = {
     "settings.assoc.desc": "Optional and unchecked by default. AVIFnim Viewer never takes over your formats on its own.",
     "settings.assoc.default": "Set as default…",
     "settings.assoc.hint": "Opens the system settings; the app never silently changes defaults.",
+    "settings.assoc.platformNote": "On Linux, file associations are managed by the system (the file manager’s “Open with” menu). On macOS, use “Open with” → “Change All” in Finder.",
     "settings.appearance": "Appearance",
     "settings.theme": "Theme",
     "settings.lang": "Language",
@@ -979,6 +981,11 @@ function applyPlatformMenu() {
   document.querySelectorAll("[data-windows-only]").forEach((el) => {
     el.hidden = !isWindows;
   });
+  // Associacoes de arquivo: a UI de checkboxes so funciona no Windows (HKCU).
+  const assocSection = $("settings-assoc");
+  const assocNote = $("settings-assoc-note");
+  if (assocSection) assocSection.hidden = !isWindows;
+  if (assocNote) assocNote.hidden = isWindows;
 }
 
 function showCtxMenu(clientX, clientY) {

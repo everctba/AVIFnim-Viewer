@@ -147,7 +147,7 @@
         <button class="icon-btn small" data-close="settings-modal" aria-label="Fechar">✕</button>
       </header>
       <div class="modal-body">
-        <section class="settings-section">
+        <section class="settings-section" id="settings-assoc">
           <h3 data-i18n="settings.assoc.title">Associações de arquivo</h3>
           <p class="muted" data-i18n="settings.assoc.desc">Opcional e desmarcado por padrão. O AVIFnim Viewer nunca
             assume seus formatos sozinho.</p>
@@ -161,6 +161,11 @@
               o padrão silenciosamente.</span>
           </div>
         </section>
+
+        <p class="muted small" id="settings-assoc-note" data-i18n="settings.assoc.platformNote" hidden>
+          No Linux, as associações são definidas pelo sistema (menu “Abrir com” do gerenciador de arquivos).
+          No macOS, use “Abrir com” → “Alterar tudo” no Finder.
+        </p>
 
         <section class="settings-section">
           <h3 data-i18n="settings.appearance">Aparência</h3>
