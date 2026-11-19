@@ -86,10 +86,20 @@ jobs:
             librsvg2-dev \
             xvfb
 
+      - name: Prepare Desktop for postinst check
+        run: mkdir -p "$HOME/Desktop"
+
       - name: Install the .deb package
         run: |
           sudo apt-get install -y ./dist/*.deb
           dpkg -L avifnim-viewer | head -20 || true
+
+      - name: Verify desktop shortcut (postinst)
+        run: |
+          set -e
+          test -f "$HOME/Desktop/avifnim-viewer.desktop"
+          grep -q '^Exec=avifnim-viewer' "$HOME/Desktop/avifnim-viewer.desktop"
+          echo "OK: atalho criado automaticamente pelo postinst"
 
       - name: Run app headless with an animated image
         run: |

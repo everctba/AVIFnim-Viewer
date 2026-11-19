@@ -66,6 +66,7 @@ Os instaladores também ficam na pasta local [`dist/`](dist/README.md) após o b
 - **Duplo clique** alterna entre Fit e 100%.
 - **Sequências PNG/JPG (G7)**: detecção automática pelo nome do arquivo e reprodução em loop a **30 ou 60 fps**.
 - **Associações de arquivo opt-in**, desmarcadas por padrão; o app nunca “sequestra” formatos.
+- **Atalho automático na área de trabalho (Linux)**: o `postinst` do `.deb` cria o atalho para o usuário do `sudo` via `xdg-user-dir` e o remove no uninstall.
 - **Funil discreto** para o AVIFnim pago: modal único após a 5ª visualização + banner contextual em GIF/WebP.
 - **PT-BR e EN-US**, tema **claro ou escuro** (interface inteira acompanha), atalhos de teclado e acessibilidade (foco visível, ARIA, contraste AA).
 - **Sem telemetria**, sem contas, sem nuvem.

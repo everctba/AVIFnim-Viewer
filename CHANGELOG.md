@@ -25,6 +25,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Fallback AVIF nativo**: quando o webview não decodifica AVIF (ex.: WebKitGTK do Mint sem suporte),
   o app decodifica **still e animação** em Rust puro (`avif-rust`, MIT), respeita as durações dos
   frames e toca pelo player de sequência — sem FFmpeg/GPL.
+- **Atalho automático na área de trabalho (Linux)**: `postinst` do `.deb` cria
+  `avifnim-viewer.desktop` para o usuário do `sudo` (respeitando `xdg-user-dir DESKTOP`) e o
+  `postrm` remove no uninstall — sem script manual.
 
 ### Segurança
 

@@ -46,6 +46,12 @@
         "installerHooks": "windows/nsis-hooks.nsh",
         "template": "windows/installer.nsi"
       }
+    },
+    "linux": {
+      "deb": {
+        "postInstallScript": "linux/postinst.sh",
+        "postRemoveScript": "linux/postremove.sh"
+      }
     }
   }
 }
