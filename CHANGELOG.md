@@ -25,6 +25,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Fallback AVIF nativo**: quando o webview não decodifica AVIF (ex.: WebKitGTK do Mint sem suporte),
   o app decodifica **still e animação** em Rust puro (`avif-rust`, MIT), respeita as durações dos
   frames e toca pelo player de sequência — sem FFmpeg/GPL.
+- **Painel de Informações** com fundo sólido (94%) + blur de 16px, para o texto não competir
+  com a imagem ao fundo.
 - **Associações de arquivo apenas no Windows**: no Linux/macOS a seção de checkboxes é ocultada e
   uma nota explica que a associação é gerenciada pelo sistema (“Abrir com” / “Alterar tudo”).
 - **Modal de Configurações**: cabeçalho com a mesma faixa colorida (fita-cor) do Sobre, clara no

@@ -681,10 +681,14 @@ html[data-theme="light"] .dz-logo {
   width: 320px;
   max-width: calc(100% - 20px);
   padding: 14px 16px;
+  /* Fallback solido (WebView sem color-mix): nunca fica transparente demais. */
+  background: var(--bg-elev);
   background: color-mix(in srgb, var(--bg-elev) 94%, transparent);
   border: 1px solid var(--border);
   border-radius: 14px;
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
   font-size: 12px;
 }
 
