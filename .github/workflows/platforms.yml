@@ -160,8 +160,14 @@ jobs:
       - name: Verify document types (Info.plist)
         run: |
           set -e
-          plist="$(find src-tauri/target -path '*bundle/macos/*.app/Contents/Info.plist' | head -n1)"
-          test -n "$plist"
+          dmg="$(find src-tauri/target -path '*bundle/dmg/*.dmg' | head -n1)"
+          test -n "$dmg"
+          mount=/tmp/avifnim-verify
+          mkdir -p "$mount"
+          hdiutil attach "$dmg" -mountpoint "$mount" -nobrowse -quiet
+          trap 'hdiutil detach "$mount" -quiet || true' EXIT
+          plist="$mount/AVIFnim Viewer.app/Contents/Info.plist"
+          test -f "$plist"
           plutil -p "$plist" | grep -q 'CFBundleDocumentTypes'
           plutil -p "$plist" | grep -qi 'avif'
           echo "OK: CFBundleDocumentTypes com AVIF no Info.plist"
