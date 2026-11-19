@@ -2,16 +2,16 @@
 
 Pasta de artefatos locais (binários **não** versionados; README/checksums são).
 
-## Build atual — 0.1.2 (não publicado; portátil Windows em `a22bb9d`)
+## Build atual — 0.1.2 (não publicado; portátil Windows em `4979c39`)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
 | `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,74 MB | `0184d16c…9f73ef` |
-| `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `52beae7e…b65164` |
+| `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `11b261c1…fd9641` |
 | `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `6ade3890…29dc89` |
 | `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,50 MB | `99a14aa2…aa395b` |
 
-> Somente o **portátil Windows** foi rebuildado com a pílula **Auto play** (commit `a22bb9d`).
+> Somente o **portátil Windows** foi rebuildado com a pílula **Auto play** (commit `4979c39`).
 > Instalador Windows, `.deb` e `.dmg` permanecem no build `be06753` até o próximo rebuild.
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
