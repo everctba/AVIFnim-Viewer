@@ -2,14 +2,14 @@
 
 Pasta de artefatos locais (binários **não** versionados; README/checksums são).
 
-## Build atual — 0.1.2 (não publicado; commit `569b72f`)
+## Build atual — 0.1.2 (não publicado; commit `1ba9c3a`)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
-| `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,74 MB | `7793e9b4…d5781f` |
-| `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,42 MB | `373318e5…b00c73` |
-| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `8014cf96…662a27` |
-| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,50 MB | `0ad58ba5…610499` |
+| `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,74 MB | `8b6531f8…aeca1f` |
+| `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,42 MB | `6589f6c9…68ec94` |
+| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `4409733f…2c5855` |
+| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,50 MB | `011830d7…087e5b` |
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
 não instala, não cria atalhos e não registra associações. Requer o WebView2 Runtime (Windows 10/11
