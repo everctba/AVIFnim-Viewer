@@ -25,6 +25,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Fallback AVIF nativo**: quando o webview não decodifica AVIF (ex.: WebKitGTK do Mint sem suporte),
   o app decodifica **still e animação** em Rust puro (`avif-rust`, MIT), respeita as durações dos
   frames e toca pelo player de sequência — sem FFmpeg/GPL.
+- **Modal de Configurações**: cabeçalho com a mesma faixa colorida (fita-cor) do Sobre, clara no
+  tema light e escura no dark.
 - **Auto play de sequências**: pílula ao lado do badge do formato (ON/OFF) liga e desliga a
   reprodução automática das sequências numeradas da pasta; o estado vale durante a sessão e
   respeita a navegação.
