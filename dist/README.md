@@ -2,20 +2,18 @@
 
 Pasta de artefatos locais (binários **não** versionados; README/checksums são).
 
-## Build atual — 0.1.2 (não publicado; portátil Windows em `33c9b58`, Linux/macOS em `7992f5b`)
+## Build atual — 0.1.2 (não publicado; portátil Windows em `33c9b58`, Linux/macOS em `15fd53c`)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
 | `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,74 MB | `169c63e8…93ff53` |
 | `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `fd576ece…5b5500` |
-| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `d1922183…600349` |
-| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,50 MB | `a0c1ceaa…114eee` |
+| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `80145cdd…ba6fb3` |
+| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,67 MB | `2f7ae913…99710d` |
 
-> Portátil Windows em `33c9b58` (nome longo truncado no meio + Auto play ON/OFF do mesmo tamanho).
-> Linux/macOS em `7992f5b` (site fallback, MIME types e CFBundleDocumentTypes/LaunchServices).
-
-> Todos rebuildados em `7992f5b`: site fallback `everctba.github.io/avifnim-site`, **MIME types** no
-> `.desktop` (Linux) e **CFBundleDocumentTypes + LaunchServices** (macOS).
+> Portátil Windows em `33c9b58` (nome longo truncado + Auto play ON/OFF do mesmo tamanho).
+> Linux/macOS em `15fd53c`: DMG com fundo 660×400 (`BannerAbout-branco.png` em cover/center),
+> ícones centralizados, CFBundleDocumentTypes + LaunchServices; `.deb` com MIME types.
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
 não instala, não cria atalhos e não registra associações. Requer o WebView2 Runtime (Windows 10/11
