@@ -5,7 +5,9 @@ use serde::Serialize;
 /// Limites de seguranca do fallback AVIF (o webview pode nao suportar AVIF).
 const MAX_PIXELS: u64 = 100_000_000; // 100 MPix por frame
 const MAX_FRAMES: usize = 300;
-const MAX_TOTAL_RGBA_BYTES: u64 = 512 * 1024 * 1024;
+/// Limite do que fica de fato guardado (PNG comprimido), nao do RGBA bruto.
+/// O decoder processa um frame por vez; frames 1080p comprimem para ~1 MB.
+const MAX_TOTAL_PNG_BYTES: u64 = 384 * 1024 * 1024;
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -39,11 +41,15 @@ fn encode_png(rgba: &[u8], width: u32, height: u32) -> Result<Vec<u8>, String> {
     Ok(png)
 }
 
-fn png_data_url(rgba: &[u8], width: u32, height: u32) -> Result<String, String> {
+fn png_data_url(rgba: &[u8], width: u32, height: u32) -> Result<(String, u64), String> {
     let png = encode_png(rgba, width, height)?;
-    Ok(format!(
-        "data:image/png;base64,{}",
-        base64::engine::general_purpose::STANDARD.encode(png)
+    let size = png.len() as u64;
+    Ok((
+        format!(
+            "data:image/png;base64,{}",
+            base64::engine::general_purpose::STANDARD.encode(png)
+        ),
+        size,
     ))
 }
 
@@ -70,7 +76,7 @@ pub fn decode(data: &[u8], lang: &str) -> Result<AvifPayload, String> {
     let mut frames = Vec::new();
     let mut width = 0u32;
     let mut height = 0u32;
-    let mut total_bytes = 0u64;
+    let mut total_png_bytes = 0u64;
     let mut seq_error = None;
 
     match avif_rust::AvifSequenceDecoder::new(data) {
@@ -96,21 +102,33 @@ pub fn decode(data: &[u8], lang: &str) -> Result<AvifPayload, String> {
                             format!("AVIF has too many frames (limit {MAX_FRAMES})"),
                         ));
                     }
-                    total_bytes += image.rgba.len() as u64;
-                    if total_bytes > MAX_TOTAL_RGBA_BYTES {
+                    let (data_url, png_size) =
+                        png_data_url(&image.rgba, image.width as u32, image.height as u32)?;
+                    total_png_bytes += png_size;
+                    if total_png_bytes > MAX_TOTAL_PNG_BYTES {
                         return Err(msg(
                             lang,
-                            "AVIF grande demais para decodificar".to_string(),
-                            "AVIF too large to decode".to_string(),
+                            format!(
+                                "AVIF animado grande demais ({} frames, {}x{}; {:.0} MB de PNG; limite {} MB)",
+                                frames.len() + 1,
+                                image.width,
+                                image.height,
+                                total_png_bytes as f64 / (1024.0 * 1024.0),
+                                MAX_TOTAL_PNG_BYTES / (1024 * 1024)
+                            ),
+                            format!(
+                                "Animated AVIF too large ({} frames, {}x{}; {:.0} MB of PNG; {} MB limit)",
+                                frames.len() + 1,
+                                image.width,
+                                image.height,
+                                total_png_bytes as f64 / (1024.0 * 1024.0),
+                                MAX_TOTAL_PNG_BYTES / (1024 * 1024)
+                            ),
                         ));
                     }
                     let duration_ms = frame.timing.duration_ms.max(1).min(u32::MAX as u64) as u32;
                     frames.push(AvifFramePayload {
-                        data_url: png_data_url(
-                            &image.rgba,
-                            image.width as u32,
-                            image.height as u32,
-                        )?,
+                        data_url,
                         duration_ms,
                     });
                 }
@@ -137,7 +155,7 @@ pub fn decode(data: &[u8], lang: &str) -> Result<AvifPayload, String> {
     match avif_rust::image_from_bytes(data) {
         Ok(image) => {
             check_frame_size(image.width as u64, image.height as u64, lang)?;
-            let data_url = png_data_url(&image.rgba, image.width as u32, image.height as u32)?;
+            let (data_url, _) = png_data_url(&image.rgba, image.width as u32, image.height as u32)?;
             Ok(AvifPayload {
                 width: image.width as u32,
                 height: image.height as u32,
