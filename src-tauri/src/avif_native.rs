@@ -191,8 +191,8 @@ pub fn decode(data: &[u8], lang: &str) -> Result<AvifPayload, String> {
             avifRGBImageSetDefaults(&mut rgb, image);
             rgb.depth = 8;
             rgb.format = AVIF_RGB_FORMAT_RGBA;
-            rgb.ignoreAlpha = AVIF_FALSE;
-            rgb.alphaPremultiplied = AVIF_FALSE;
+            rgb.ignoreAlpha = AVIF_FALSE as avifBool;
+            rgb.alphaPremultiplied = AVIF_FALSE as avifBool;
 
             let result = avifRGBImageAllocatePixels(&mut rgb);
             if result != AVIF_RESULT_OK {
@@ -260,5 +260,38 @@ pub fn decode(data: &[u8], lang: &str) -> Result<AvifPayload, String> {
             animated,
             frames,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn asset(name: &str) -> Vec<u8> {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("tests")
+            .join("assets")
+            .join(name);
+        std::fs::read(&path).unwrap_or_else(|e| panic!("ler {}: {e}", path.display()))
+    }
+
+    #[test]
+    fn decodes_animated_avif_native() {
+        let payload = decode(&asset("anim.avif"), "pt").expect("libavif deve decodificar");
+        assert_eq!((payload.width, payload.height), (96, 64));
+        assert!(payload.animated);
+        assert_eq!(payload.frames.len(), 8);
+        assert_eq!(payload.frames[0].duration_ms, 100);
+        assert!(payload.frames[0]
+            .data_url
+            .starts_with("data:image/png;base64,"));
+    }
+
+    #[test]
+    fn decodes_still_avif_native() {
+        let payload = decode(&asset("still.avif"), "pt").expect("libavif deve decodificar");
+        assert!(!payload.animated);
+        assert_eq!(payload.frames.len(), 1);
     }
 }
