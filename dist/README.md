@@ -2,19 +2,19 @@
 
 Pasta de artefatos locais (binários **não** versionados; README/checksums são).
 
-## Build atual — 0.1.2 (não publicado; portátil Windows em `d6b070f`, Linux/macOS em `fb959d6`)
+## Build atual — 0.1.2 (não publicado; portátil Windows em `d6b070f`, Linux/macOS em `6e6bcc2`)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
 | `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,75 MB | `73765fa3…c029ee` |
 | `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `3af80d0b…7b60f1` |
 | `AVIFnim.Viewer_0.1.2_x64.msix` | Windows x64 — **Microsoft Store** (sem assinatura) | 4,29 MB | `0f7137b2…855f47` |
-| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `c72fd2e9…f5fc7c` |
-| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `7b55eaeb…11cb5b` |
+| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,19 MB | `ae674b49…b98595` |
+| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `c899ab91…f9e82b` |
 
-> Portátil Windows em `d6b070f` (badge do formato colado ao nome); instalador/MSIX em `bfdf2e7`.
+> Portátil Windows e Linux/macOS com o badge do formato colado ao nome (`d6b070f`/`6e6bcc2`).
 > `.msix` é um alvo **separado** para a Microsoft Store (não substitui o instalador; não instale os
-> dois juntos). Linux/macOS em `fb959d6`: AVIF fallback com limite por PNG comprimido + DMG/MIME.
+> dois juntos). Linux/macOS incluem o fix de AVIF grande (limite por PNG comprimido).
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
 não instala, não cria atalhos e não registra associações. Requer o WebView2 Runtime (Windows 10/11
