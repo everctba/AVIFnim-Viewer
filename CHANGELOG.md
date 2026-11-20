@@ -8,6 +8,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 ### Alterado
 
 - **Novo ícone do aplicativo** (design do owner, `icone.png` → ícones Windows/macOS/Linux).
+- **Nome de arquivo longo**: truncamento no meio (preserva início, final e extensão) com o nome
+  completo no tooltip; o título não invade mais os controles centrais.
 - **Barra de ferramentas reorganizada e no rodapé**: abrir → nome do arquivo → ← → tela cheia → →
   → zoom − → **100%** → zoom + → **percentual de zoom** (o botão Fit foi removido; use 100% ou
   duplo clique para alternar Fit/100%).
