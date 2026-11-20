@@ -613,12 +613,33 @@ function whenImageReady(img, timeoutMs = 5000) {
   });
 }
 
+function ellipsizeMiddle(name, max = 46) {
+  if (name.length <= max) return name;
+  const head = Math.ceil((max - 1) * 0.6);
+  const tail = max - 1 - head;
+  return name.slice(0, head) + "…" + name.slice(-tail);
+}
+
+function fitFileTitle(name) {
+  const el = $("file-title");
+  if (!el || !name) return;
+  el.textContent = name;
+  if (el.scrollWidth <= el.clientWidth + 1) return;
+  let max = name.length - 1;
+  while (max > 10) {
+    max -= 2;
+    el.textContent = ellipsizeMiddle(name, max);
+    if (el.scrollWidth <= el.clientWidth + 1) break;
+  }
+}
+
 function updateChrome() {
   const cur = state.current;
   const title = $("file-title");
   const badge = $("format-badge");
   if (!cur) {
     title.textContent = t("toolbar.noFile");
+    title.removeAttribute("title");
     badge.classList.add("hidden");
     state.seqCandidate = null;
     updateAutoplayPill(false, state.autoplay);
@@ -626,7 +647,8 @@ function updateChrome() {
     invoke("set_window_title", { title: "AVIFnim Viewer" }).catch(() => {});
     return;
   }
-  title.textContent = cur.name;
+  fitFileTitle(cur.name);
+  title.title = cur.name;
   badge.textContent = cur.format;
   badge.className = "badge";
   const ext = extOf(cur.path);
@@ -1565,6 +1587,12 @@ function bindUi() {
   $("btn-open").addEventListener("click", openDialog);
   $("btn-open-empty").addEventListener("click", openDialog);
   $("btn-autoplay").addEventListener("click", toggleAutoplay);
+  if (window.ResizeObserver) {
+    const titleEl = $("file-title");
+    new ResizeObserver(() => {
+      if (state.current) fitFileTitle(state.current.name);
+    }).observe(titleEl);
+  }
   $("dropzone").addEventListener("click", (event) => {
     if (event.target.id !== "btn-open-empty") openDialog();
   });

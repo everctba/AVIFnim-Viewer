@@ -140,7 +140,7 @@ body {
   }
 
   .file-title {
-    max-width: 22vw;
+    max-width: none;
   }
 
   .zoom-label {
@@ -168,7 +168,9 @@ body {
 }
 
 .tb-left {
-  justify-self: start;
+  justify-self: stretch;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .tb-center {
@@ -410,8 +412,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
-  flex: 0 1 auto;
-  max-width: 42vw;
+  flex: 1 1 auto;
 }
 
 .badge {
