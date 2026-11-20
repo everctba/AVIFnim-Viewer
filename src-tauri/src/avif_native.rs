@@ -8,6 +8,10 @@ use libavif_sys::*;
 use serde::Serialize;
 use std::ffi::CStr;
 use std::slice;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+use tauri::ipc::{Channel, InvokeResponseBody};
 
 const MAX_PIXELS: u64 = 100_000_000; // 100 MPix por frame
 const MAX_FRAMES: usize = 300;
@@ -263,6 +267,219 @@ pub fn decode(data: &[u8], lang: &str) -> Result<AvifPayload, String> {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct FrameInfo {
+    pub width: u32,
+    pub height: u32,
+    pub duration_ms: u32,
+    pub index: u32,
+    pub total: u32,
+    pub animated: bool,
+}
+
+unsafe fn rgba_frame(
+    decoder: *mut avifDecoder,
+    lang: &str,
+) -> Result<(u32, u32, Vec<u8>), String> {
+    let image = (*decoder).image;
+    if image.is_null() {
+        return Err(msg(
+            lang,
+            "Frame AVIF sem imagem".to_string(),
+            "AVIF frame has no image".to_string(),
+        ));
+    }
+    let width = (*image).width;
+    let height = (*image).height;
+    check_frame_size(width as u64, height as u64, lang)?;
+
+    let mut rgb = avifRGBImage::default();
+    avifRGBImageSetDefaults(&mut rgb, image);
+    rgb.depth = 8;
+    rgb.format = AVIF_RGB_FORMAT_RGBA;
+    rgb.ignoreAlpha = AVIF_FALSE as avifBool;
+    rgb.alphaPremultiplied = AVIF_FALSE as avifBool;
+
+    let result = avifRGBImageAllocatePixels(&mut rgb);
+    if result != AVIF_RESULT_OK {
+        return Err(result_error(decoder, result, lang));
+    }
+    let _rgb_guard = RgbGuard(rgb);
+
+    let result = avifImageYUVToRGB(image, &mut rgb);
+    if result != AVIF_RESULT_OK {
+        return Err(result_error(decoder, result, lang));
+    }
+
+    let row_bytes = rgb.rowBytes as usize;
+    let row_pixels = width as usize * 4;
+    let mut rgba = Vec::with_capacity(row_pixels * height as usize);
+    for row in 0..height as usize {
+        let src = rgb.pixels.add(row * row_bytes);
+        rgba.extend_from_slice(slice::from_raw_parts(src, row_pixels));
+    }
+    Ok((width, height, rgba))
+}
+
+/// Decodifica em streaming, emitindo cada frame RGBA cru (sem PNG/base64).
+/// Repete a animacao em loop ate `cancel` ser setado.
+pub fn stream(
+    data: &[u8],
+    lang: &str,
+    cancel: &AtomicBool,
+    mut emit: impl FnMut(FrameInfo, &[u8]) -> bool,
+) -> Result<(), String> {
+    unsafe {
+        loop {
+            if cancel.load(Ordering::Relaxed) {
+                return Ok(());
+            }
+
+            let decoder = avifDecoderCreate();
+            if decoder.is_null() {
+                return Err(msg(
+                    lang,
+                    "Nao foi possivel criar o decoder AVIF".to_string(),
+                    "Could not create the AVIF decoder".to_string(),
+                ));
+            }
+            let _decoder_guard = DecoderGuard(decoder);
+
+            (*decoder).codecChoice = AVIF_CODEC_CHOICE_DAV1D;
+            (*decoder).maxThreads = std::thread::available_parallelism()
+                .map(|n| n.get().min(8) as i32)
+                .unwrap_or(1);
+
+            let result = avifDecoderSetIOMemory(decoder, data.as_ptr(), data.len());
+            if result != AVIF_RESULT_OK {
+                return Err(result_error(decoder, result, lang));
+            }
+            let result = avifDecoderParse(decoder);
+            if result != AVIF_RESULT_OK {
+                return Err(result_error(decoder, result, lang));
+            }
+
+            let image_count = (*decoder).imageCount;
+            if image_count <= 0 {
+                return Err(msg(
+                    lang,
+                    "AVIF sem imagens".to_string(),
+                    "AVIF has no images".to_string(),
+                ));
+            }
+            if image_count as usize > MAX_FRAMES {
+                return Err(msg(
+                    lang,
+                    format!("AVIF com frames demais (limite {MAX_FRAMES})"),
+                    format!("AVIF has too many frames (limit {MAX_FRAMES})"),
+                ));
+            }
+
+            let animated = image_count > 1;
+            let mut last_emit: Option<Instant> = None;
+            let mut last_duration = 0u32;
+
+            for index in 0..image_count {
+                if cancel.load(Ordering::Relaxed) {
+                    return Ok(());
+                }
+
+                if let Some(started) = last_emit {
+                    let target = Duration::from_millis(last_duration as u64);
+                    let elapsed = started.elapsed();
+                    if elapsed < target {
+                        std::thread::sleep(target - elapsed);
+                    }
+                }
+
+                let result = avifDecoderNextImage(decoder);
+                if result != AVIF_RESULT_OK {
+                    return Err(result_error(decoder, result, lang));
+                }
+
+                let (width, height, rgba) = rgba_frame(decoder, lang)?;
+                let duration_ms = if animated {
+                    let seconds = (*decoder).imageTiming.duration;
+                    if seconds > 0.0 {
+                        (seconds * 1000.0).round().clamp(1.0, u32::MAX as f64) as u32
+                    } else {
+                        100
+                    }
+                } else {
+                    0
+                };
+
+                let info = FrameInfo {
+                    width,
+                    height,
+                    duration_ms,
+                    index: index as u32,
+                    total: image_count as u32,
+                    animated,
+                };
+                if !emit(info, &rgba) {
+                    return Ok(());
+                }
+                last_emit = Some(Instant::now());
+                last_duration = duration_ms;
+            }
+
+            if !animated {
+                return Ok(());
+            }
+
+            // Espera o ultimo frame antes de reiniciar o loop.
+            if let Some(started) = last_emit {
+                let target = Duration::from_millis(last_duration as u64);
+                let elapsed = started.elapsed();
+                if elapsed < target {
+                    std::thread::sleep(target - elapsed);
+                }
+            }
+        }
+    }
+}
+
+fn stream_packet(info: FrameInfo, rgba: &[u8]) -> Vec<u8> {
+    let mut packet = Vec::with_capacity(28 + rgba.len());
+    packet.extend_from_slice(b"AVF1");
+    for value in [
+        info.width,
+        info.height,
+        info.duration_ms,
+        info.index,
+        info.total,
+        u32::from(info.animated),
+    ] {
+        packet.extend_from_slice(&value.to_le_bytes());
+    }
+    packet.extend_from_slice(rgba);
+    packet
+}
+
+/// Dispara o decode em uma thread e envia os frames pelo Channel do Tauri.
+pub fn spawn_stream(
+    data: Arc<Vec<u8>>,
+    lang: String,
+    cancel: Arc<AtomicBool>,
+    channel: Channel<InvokeResponseBody>,
+) {
+    let _ = std::thread::Builder::new()
+        .name("avif-stream".into())
+        .spawn(move || {
+            let result = stream(&data, &lang, &cancel, |info, rgba| {
+                channel
+                    .send(InvokeResponseBody::Raw(stream_packet(info, rgba)))
+                    .is_ok()
+            });
+            if let Err(err) = result {
+                let mut packet = b"AVER".to_vec();
+                packet.extend_from_slice(err.as_bytes());
+                let _ = channel.send(InvokeResponseBody::Raw(packet));
+            }
+        });
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -293,5 +510,24 @@ mod tests {
         let payload = decode(&asset("still.avif"), "pt").expect("libavif deve decodificar");
         assert!(!payload.animated);
         assert_eq!(payload.frames.len(), 1);
+    }
+
+    #[test]
+    fn streams_animated_frames_native() {
+        let cancel = AtomicBool::new(false);
+        let mut frames = 0usize;
+        stream(&asset("anim.avif"), "pt", &cancel, |info, rgba| {
+            assert_eq!((info.width, info.height), (96, 64));
+            assert!(info.animated);
+            assert_eq!(info.total, 8);
+            assert_eq!(rgba.len(), 96 * 64 * 4);
+            frames += 1;
+            if frames == 8 {
+                cancel.store(true, Ordering::Relaxed);
+            }
+            true
+        })
+        .expect("stream deve decodificar");
+        assert_eq!(frames, 8);
     }
 }

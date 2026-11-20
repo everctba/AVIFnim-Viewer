@@ -320,6 +320,9 @@ const state = {
   benchStart: 0,
   imageErrorShown: false,
   avifFallbackTried: false,
+  avifStreamActive: false,
+  avifStreamPath: null,
+  avifStreamCtx: null,
   ctxOpen: false,
   platform: "windows",
 };
@@ -507,6 +510,9 @@ async function showCurrent() {
   if (!entry) return;
   hideCtxMenu();
   hideError();
+  stopAvifStream();
+  $("avif-canvas").classList.add("hidden");
+  $("viewer-img").classList.remove("hidden");
   const startedAt = performance.now();
   const hadImage = !!state.current;
   setBusy(true);
@@ -563,8 +569,102 @@ async function showCurrent() {
 
 /* ---------------- fallback AVIF (webview sem decoder) ---------------- */
 
+function avifCanvasActive() {
+  const canvas = $("avif-canvas");
+  return canvas && !canvas.classList.contains("hidden");
+}
+
+function stopAvifStream(notifyBackend = true) {
+  const wasActive = state.avifStreamActive;
+  state.avifStreamActive = false;
+  state.avifStreamPath = null;
+  state.avifStreamCtx = null;
+  const canvas = $("avif-canvas");
+  if (canvas) canvas.classList.add("hidden");
+  if (wasActive && notifyBackend) {
+    invoke("stop_avif_stream").catch(() => {});
+  }
+}
+
+async function startAvifStream(path) {
+  const Channel = TAURI.core && TAURI.core.Channel;
+  if (!Channel) throw new Error("Channel indisponivel");
+  stopAvifStream();
+  const channel = new Channel();
+  const canvas = $("avif-canvas");
+  const ctx = canvas.getContext("2d", { alpha: true });
+  if (!ctx) throw new Error("Canvas indisponivel");
+
+  state.avifStreamActive = true;
+  state.avifStreamPath = path;
+  state.avifStreamCtx = ctx;
+  let first = true;
+
+  channel.onmessage = (message) => {
+    if (!state.avifStreamActive || !state.current || !samePath(state.current.path, path)) return;
+    if (!(message instanceof ArrayBuffer)) return;
+    const bytes = new Uint8Array(message);
+    if (bytes.length < 4) return;
+    const magic = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+    if (magic === "AVER") {
+      state.imageErrorShown = true;
+      setBusy(false);
+      showError(new TextDecoder().decode(bytes.subarray(4)) || t("error.decode"));
+      return;
+    }
+    if (magic !== "AVF1" || bytes.length < 28) return;
+
+    const view = new DataView(message);
+    const width = view.getUint32(4, true);
+    const height = view.getUint32(8, true);
+    const durationMs = view.getUint32(12, true);
+    const index = view.getUint32(16, true);
+    const total = view.getUint32(20, true);
+    const flags = view.getUint32(24, true);
+    const animated = (flags & 1) === 1;
+    const rgba = new Uint8ClampedArray(message, 28);
+
+    if (first) {
+      first = false;
+      canvas.width = width;
+      canvas.height = height;
+      state.current.width = width;
+      state.current.height = height;
+      state.current.animated = animated;
+      state.current.mime = "image/x-rgba";
+      $("viewer-img").classList.add("hidden");
+      canvas.classList.remove("hidden");
+      $("dropzone").classList.add("hidden");
+      $("viewport").classList.remove("hidden");
+      setBusy(false);
+      updateChrome();
+      updateInfo();
+      updateBanner();
+      resetView();
+    } else if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    ctx.putImageData(new ImageData(rgba, width, height), 0, 0);
+    if (index === 0) updateZoomLabel();
+  };
+
+  await invoke("start_avif_stream", { path, channel });
+}
+
 async function playAvifFallback(path) {
   setBusy(true);
+  if (state.platform === "linux" && TAURI.core && TAURI.core.Channel) {
+    try {
+      await startAvifStream(path);
+      return;
+    } catch (err) {
+      stopAvifStream(false);
+      console.warn("avif stream", err);
+    }
+  }
+
   try {
     const payload = await invoke("decode_avif_fallback", { path });
     if (!state.current || !samePath(state.current.path, path)) return;
@@ -879,15 +979,28 @@ function prefetchNeighbors() {
 
 /* ---------------- zoom / pan ---------------- */
 
+function mediaWidth() {
+  if (avifCanvasActive()) return $("avif-canvas").width;
+  const img = $("viewer-img");
+  return img ? img.naturalWidth : 0;
+}
+
+function mediaHeight() {
+  if (avifCanvasActive()) return $("avif-canvas").height;
+  const img = $("viewer-img");
+  return img ? img.naturalHeight : 0;
+}
+
 function effectiveZoomScale() {
   if (!state.fitMode) return state.zoom;
-  const img = $("viewer-img");
   const viewport = $("viewport");
-  if (!img || !viewport || !img.naturalWidth || !img.naturalHeight) return 1;
+  const w = mediaWidth();
+  const h = mediaHeight();
+  if (!viewport || !w || !h) return 1;
   const vw = viewport.clientWidth;
   const vh = viewport.clientHeight;
   if (!vw || !vh) return 1;
-  return Math.min(1, vw / img.naturalWidth, vh / img.naturalHeight);
+  return Math.min(1, vw / w, vh / h);
 }
 
 function updateZoomLabel() {
@@ -898,14 +1011,15 @@ function updateZoomLabel() {
 
 function applyView() {
   const img = $("viewer-img");
+  const canvas = $("avif-canvas");
   const viewport = $("viewport");
   const actual = !state.fitMode;
   viewport.classList.toggle("actual", actual);
-  if (actual) {
-    img.style.transform = "translate(" + state.panX + "px, " + state.panY + "px) scale(" + state.zoom + ")";
-  } else {
-    img.style.transform = "";
-  }
+  const transform = actual
+    ? "translate(" + state.panX + "px, " + state.panY + "px) scale(" + state.zoom + ")"
+    : "";
+  if (img) img.style.transform = transform;
+  if (canvas) canvas.style.transform = transform;
   viewport.classList.toggle("can-pan", actual && state.zoom > 1);
   updateZoomLabel();
 }
@@ -947,9 +1061,8 @@ function updateInfo() {
   if (!cur) return;
   $("info-name").textContent = cur.name || "—";
   $("info-format").textContent = cur.format || "—";
-  const img = $("viewer-img");
-  const w = img.naturalWidth || cur.width || 0;
-  const h = img.naturalHeight || cur.height || 0;
+  const w = mediaWidth() || cur.width || 0;
+  const h = mediaHeight() || cur.height || 0;
   $("info-dims").textContent = w && h ? w + " × " + h + " px" : "—";
   $("info-size").textContent = humanSize(cur.size);
   let seqText = t("info.seqNone");
@@ -1082,21 +1195,23 @@ async function copyTextToClipboard(text) {
 }
 
 function copyImageToClipboard() {
-  const img = $("viewer-img");
-  if (!img || !img.naturalWidth || !state.current) {
+  const source = avifCanvasActive() ? $("avif-canvas") : $("viewer-img");
+  const width = avifCanvasActive() ? source.width : source && source.naturalWidth;
+  const height = avifCanvasActive() ? source.height : source && source.naturalHeight;
+  if (!source || !width || !height || !state.current) {
     toast(t("toast.clipboardFail"));
     return;
   }
   const path = state.current.path;
   const canvas = document.createElement("canvas");
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
+  canvas.width = width;
+  canvas.height = height;
   const context = canvas.getContext("2d");
   if (!context) {
     copyTextToClipboard(path);
     return;
   }
-  context.drawImage(img, 0, 0);
+  context.drawImage(source, 0, 0);
   canvas.toBlob(
     (blob) => {
       if (!blob) {

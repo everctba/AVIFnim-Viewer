@@ -11,6 +11,9 @@ pub mod pnm;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::AtomicBool;
+#[cfg(target_os = "linux")]
+use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
 
 use base64::Engine as _;
@@ -65,6 +68,8 @@ pub struct AppState {
     pub data_dir: PathBuf,
     /// Arquivo recebido pelo macOS via Apple Event antes do frontend carregar.
     pub pending_open: Mutex<Option<String>>,
+    /// Cancela a stream AVIF nativa ao navegar para outro arquivo.
+    pub avif_cancel: Mutex<Option<Arc<AtomicBool>>>,
 }
 
 impl AppState {
@@ -76,6 +81,7 @@ impl AppState {
             settings: Mutex::new(settings),
             data_dir,
             pending_open: Mutex::new(None),
+            avif_cancel: Mutex::new(None),
         }
     }
 }
@@ -430,6 +436,48 @@ fn decode_avif_fallback(
     let (bytes, lang) = read_avif_fallback_bytes(&path, &state)?;
     avif_fallback::decode(&bytes, &lang)
 }
+
+#[cfg(target_os = "linux")]
+#[tauri::command]
+fn start_avif_stream(
+    path: String,
+    channel: tauri::ipc::Channel<tauri::ipc::InvokeResponseBody>,
+    state: tauri::State<'_, AppState>,
+) -> Result<(), String> {
+    let (bytes, lang) = read_avif_fallback_bytes(&path, &state)?;
+    let cancel = Arc::new(AtomicBool::new(false));
+    if let Ok(mut current) = state.avif_cancel.lock() {
+        if let Some(previous) = current.take() {
+            previous.store(true, Ordering::Relaxed);
+        }
+        *current = Some(cancel.clone());
+    }
+    avif_native::spawn_stream(bytes, lang, cancel, channel);
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[tauri::command]
+fn stop_avif_stream(state: tauri::State<'_, AppState>) {
+    if let Ok(mut current) = state.avif_cancel.lock() {
+        if let Some(cancel) = current.take() {
+            cancel.store(true, Ordering::Relaxed);
+        }
+    }
+}
+
+#[cfg(not(target_os = "linux"))]
+#[tauri::command]
+fn start_avif_stream(
+    _path: String,
+    _channel: tauri::ipc::Channel<tauri::ipc::InvokeResponseBody>,
+) -> Result<(), String> {
+    Err("Native AVIF streaming is Linux-only".to_string())
+}
+
+#[cfg(not(target_os = "linux"))]
+#[tauri::command]
+fn stop_avif_stream() {}
 
 #[tauri::command]
 fn list_siblings(
@@ -801,6 +849,8 @@ pub fn run() {
             open_file_dialog,
             load_image,
             decode_avif_fallback,
+            start_avif_stream,
+            stop_avif_stream,
             list_siblings,
             prefetch,
             clear_cache,
