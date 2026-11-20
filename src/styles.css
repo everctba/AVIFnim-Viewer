@@ -115,6 +115,14 @@ body {
   white-space: nowrap;
 }
 
+/* ON e OFF com o mesmo tamanho (classes on/off controlam so a cor). */
+.seq-autoplay.on,
+.seq-autoplay.off {
+  height: 22px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
 /* ON = azul primario; OFF = cinza discreto. */
 .seq-autoplay.on {
   background: var(--primary);

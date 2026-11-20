@@ -691,10 +691,9 @@ function updateAutoplayPill(visible, on) {
   if (!btn) return;
   btn.classList.toggle("hidden", !visible);
   btn.disabled = !visible;
+  btn.classList.remove("primary", "subtle");
   btn.classList.toggle("on", visible && on);
   btn.classList.toggle("off", !(visible && on));
-  btn.classList.toggle("primary", visible && on);
-  btn.classList.toggle("subtle", !(visible && on));
   btn.textContent = t(on ? "seq.autoplayOn" : "seq.autoplayOff");
   btn.setAttribute("aria-pressed", on ? "true" : "false");
 }
