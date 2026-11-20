@@ -22,15 +22,20 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 base64 = "0.22"
 image = { version = "0.25", default-features = false, features = ["png", "pnm"] }
-avif-rust = "0.3"
 rfd = "0.15"
 open = "5"
 
 [target.'cfg(windows)'.dependencies]
+avif-rust = "0.3"
 winreg = "0.52"
 
 [target.'cfg(target_os = "macos")'.dependencies]
+avif-rust = "0.3"
 core-foundation-sys = "0.8"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+# libavif + dav1d (CPU) compilados estaticamente apenas no Linux.
+libavif-sys = { version = "0.18", default-features = false, features = ["codec-dav1d"] }
 
 [dev-dependencies]
 proptest = "1"

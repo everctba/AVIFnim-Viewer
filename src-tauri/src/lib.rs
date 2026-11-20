@@ -1,5 +1,8 @@
 mod assoc;
+#[cfg(not(target_os = "linux"))]
 mod avif_fallback;
+#[cfg(target_os = "linux")]
+mod avif_native;
 mod cache;
 mod config;
 #[cfg(target_os = "macos")]
@@ -383,13 +386,12 @@ fn load_image(path: String, state: tauri::State<'_, AppState>) -> Result<ImageDa
     })
 }
 
-#[tauri::command]
-fn decode_avif_fallback(
-    path: String,
-    state: tauri::State<'_, AppState>,
-) -> Result<avif_fallback::AvifPayload, String> {
-    let file = PathBuf::from(&path);
-    let lang = app_lang(&state);
+fn read_avif_fallback_bytes(
+    path: &str,
+    state: &AppState,
+) -> Result<(Arc<Vec<u8>>, String), String> {
+    let file = PathBuf::from(path);
+    let lang = app_lang(state);
     if !file.is_file() {
         return Err(localized(
             &lang,
@@ -405,7 +407,27 @@ fn decode_avif_fallback(
             format!("Unsupported format: .{ext}"),
         ));
     }
-    let bytes = read_file_cached(&state, &file, &lang)?;
+    let bytes = read_file_cached(state, &file, &lang)?;
+    Ok((bytes, lang))
+}
+
+#[cfg(target_os = "linux")]
+#[tauri::command]
+fn decode_avif_fallback(
+    path: String,
+    state: tauri::State<'_, AppState>,
+) -> Result<avif_native::AvifPayload, String> {
+    let (bytes, lang) = read_avif_fallback_bytes(&path, &state)?;
+    avif_native::decode(&bytes, &lang)
+}
+
+#[cfg(not(target_os = "linux"))]
+#[tauri::command]
+fn decode_avif_fallback(
+    path: String,
+    state: tauri::State<'_, AppState>,
+) -> Result<avif_fallback::AvifPayload, String> {
+    let (bytes, lang) = read_avif_fallback_bytes(&path, &state)?;
     avif_fallback::decode(&bytes, &lang)
 }
 

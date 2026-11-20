@@ -44,6 +44,7 @@ jobs:
             librsvg2-dev \
             patchelf \
             build-essential \
+            cmake meson ninja-build nasm pkg-config \
             curl wget file libssl-dev
 
       - name: Install frontend tooling
