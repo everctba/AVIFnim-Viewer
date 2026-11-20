@@ -111,6 +111,8 @@ pub struct AppInfo {
     pub avifnim_url: String,
     /// windows | macos | linux
     pub platform: String,
+    /// true quando o app esta rodando como pacote MSIX (Microsoft Store).
+    pub msix: bool,
 }
 
 fn ext_lower(path: &Path) -> String {
@@ -496,6 +498,25 @@ fn record_view(state: tauri::State<'_, AppState>) -> Result<u32, String> {
     Ok(count)
 }
 
+#[cfg(windows)]
+fn is_msix_packaged() -> bool {
+    #[link(name = "kernel32")]
+    extern "system" {
+        fn GetCurrentPackageFullName(length: *mut u32, package_full_name: *mut u16) -> i32;
+    }
+    // ERROR_INSUFFICIENT_BUFFER (122): empacotado, mas o buffer de nome e pequeno.
+    // APPMODEL_ERROR_NO_PACKAGE (15700): rodando fora de um pacote MSIX.
+    unsafe {
+        let mut length = 0u32;
+        GetCurrentPackageFullName(&mut length, std::ptr::null_mut()) == 122
+    }
+}
+
+#[cfg(not(windows))]
+fn is_msix_packaged() -> bool {
+    false
+}
+
 #[tauri::command]
 fn app_info() -> AppInfo {
     AppInfo {
@@ -508,6 +529,7 @@ fn app_info() -> AppInfo {
         site_url: SITE_URL.into(),
         avifnim_url: AVIFNIM_URL.into(),
         platform: std::env::consts::OS.into(),
+        msix: is_msix_packaged(),
     }
 }
 

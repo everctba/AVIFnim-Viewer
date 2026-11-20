@@ -1010,13 +1010,14 @@ function applyPlatformMenu() {
   document.querySelectorAll("[data-windows-only]").forEach((el) => {
     el.hidden = !isWindows;
   });
-  // Associacoes de arquivo: a UI de checkboxes so funciona no Windows (HKCU).
+  // Associacoes de arquivo: a UI de checkboxes so funciona no Windows fora do MSIX.
+  const msix = !!(state.appInfo && state.appInfo.msix);
   const assocSection = $("settings-assoc");
   const assocNote = $("settings-assoc-note");
-  if (assocSection) assocSection.hidden = !isWindows;
+  if (assocSection) assocSection.hidden = !isWindows || msix;
   const macAssoc = $("settings-mac-assoc");
   if (macAssoc) macAssoc.hidden = state.platform !== "macos";
-  if (assocNote) assocNote.hidden = isWindows || state.platform === "macos";
+  if (assocNote) assocNote.hidden = state.platform === "macos" || (isWindows && !msix);
 }
 
 function showCtxMenu(clientX, clientY) {
