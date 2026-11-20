@@ -8,6 +8,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 ### Alterado
 
 - **Novo ícone do aplicativo** (design do owner, `icone.png` → ícones Windows/macOS/Linux).
+- **Fallback AVIF grande**: o limite passou a contar os **PNGs comprimidos** (não o RGBA bruto
+  acumulado), permitindo AVIF animados maiores; a mensagem de erro agora informa frames/dimensões.
 - **Pacote MSIX para Microsoft Store**: build separado (`msix/`, `scripts/build-msix.ps1` e
   workflow próprio) mantendo o instalador NSIS e o portátil intactos; identidade do Partner Center e
   UI de associações oculta quando o app roda como pacote MSIX.
