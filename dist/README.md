@@ -2,19 +2,19 @@
 
 Pasta de artefatos locais (binários **não** versionados; README/checksums são).
 
-## Build atual — 0.1.2 (não publicado; portátil Windows em `d6b070f`, Linux/macOS em `7aba0db`)
+## Build atual — 0.1.2 (não publicado; portátil Windows em `d6b070f`, Linux/macOS em `b7a7dc7`)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
 | `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,75 MB | `73765fa3…c029ee` |
 | `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `3af80d0b…7b60f1` |
 | `AVIFnim.Viewer_0.1.2_x64.msix` | Windows x64 — **Microsoft Store** (sem assinatura) | 4,29 MB | `0f7137b2…855f47` |
-| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,29 MB | `4687e97f…27c019` |
-| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `46795d36…d9b442` |
+| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,30 MB | `d7247509…09292a` |
+| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `70de94de…8fd286` |
 
-> Linux `7aba0db`: fallback AVIF **nativo com libavif + dav1d (CPU, estático)**, sem FFmpeg/GPL;
-> Windows/macOS continuam com `avif-rust`. Os testes nativos decodificam `anim.avif` (8 frames) e
-> `still.avif` no CI. `.msix` é um alvo separado para a Microsoft Store.
+> Linux `b7a7dc7`: AVIF fallback **libavif + dav1d** + **streaming de frames RGBA crus via canal
+> binário do Tauri**, desenhados em `<canvas>` — sem PNG/base64 no caminho. Windows/macOS mantêm o
+> WebView/`avif-rust`. `.msix` é um alvo separado para a Microsoft Store.
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
 não instala, não cria atalhos e não registra associações. Requer o WebView2 Runtime (Windows 10/11

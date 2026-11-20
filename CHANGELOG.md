@@ -11,6 +11,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Linux: AVIF nativo (libavif + dav1d)**: fallback AVIF do Linux passou a usar libavif/dav1d
   estáticos (CPU, sem FFmpeg/GPL), no lugar do `avif-rust`; Windows/macOS continuam com `avif-rust`.
   Testes no CI decodificam `anim.avif` (8 frames) e `still.avif`.
+- **Linux: streaming AVIF em canvas**: frames RGBA crus vão do backend ao frontend por canal binário
+  do Tauri e são desenhados em `<canvas>` — sem PNG/base64; primeiro frame aparece antes de todos
+  serem decodificados.
 - **Fallback AVIF grande**: o limite passou a contar os **PNGs comprimidos** (não o RGBA bruto
   acumulado), permitindo AVIF animados maiores; a mensagem de erro agora informa frames/dimensões.
 - **Pacote MSIX para Microsoft Store**: build separado (`msix/`, `scripts/build-msix.ps1` e
