@@ -929,7 +929,9 @@ mod tests {
         ));
 
         assert!(!is_allowed_url("https://example.com/exfil?dados=secreto"));
-        assert!(!is_allowed_url("https://everctba.github.io/avifnim-site-other"));
+        assert!(!is_allowed_url(
+            "https://everctba.github.io/avifnim-site-other"
+        ));
         assert!(!is_allowed_url("https://www.paypal.com/donate.evil/?x=1"));
         assert!(!is_allowed_url("https://www.paypal.com/signin"));
         assert!(!is_allowed_url("https://github.com/everctba/outro-repo"));
