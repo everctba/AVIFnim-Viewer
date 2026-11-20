@@ -8,6 +8,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 ### Alterado
 
 - **Novo ícone do aplicativo** (design do owner, `icone.png` → ícones Windows/macOS/Linux).
+- **Pacote MSIX para Microsoft Store**: build separado (`msix/`, `scripts/build-msix.ps1` e
+  workflow próprio) mantendo o instalador NSIS e o portátil intactos; identidade do Partner Center e
+  UI de associações oculta quando o app roda como pacote MSIX.
 - **Nome de arquivo longo**: truncamento no meio (preserva início, final e extensão) com o nome
   completo no tooltip; o título não invade mais os controles centrais.
 - **Barra de ferramentas reorganizada e no rodapé**: abrir → nome do arquivo → ← → tela cheia → →
