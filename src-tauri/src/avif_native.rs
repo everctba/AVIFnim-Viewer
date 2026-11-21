@@ -45,8 +45,14 @@ fn check_frame_size(width: u64, height: u64, lang: &str) -> Result<(), String> {
     if pixels > MAX_PIXELS {
         return Err(msg(
             lang,
-            format!("AVIF grande demais ({width}x{height} = {} MPix; limite 100 MPix)", pixels / 1_000_000),
-            format!("AVIF too large ({width}x{height} = {} MPix; 100 MPix limit)", pixels / 1_000_000),
+            format!(
+                "AVIF grande demais ({width}x{height} = {} MPix; limite 100 MPix)",
+                pixels / 1_000_000
+            ),
+            format!(
+                "AVIF too large ({width}x{height} = {} MPix; 100 MPix limit)",
+                pixels / 1_000_000
+            ),
         ));
     }
     Ok(())
@@ -269,10 +275,7 @@ pub struct FrameInfo {
     pub animated: bool,
 }
 
-unsafe fn rgba_frame(
-    decoder: *mut avifDecoder,
-    lang: &str,
-) -> Result<(u32, u32, Vec<u8>), String> {
+unsafe fn rgba_frame(decoder: *mut avifDecoder, lang: &str) -> Result<(u32, u32, Vec<u8>), String> {
     let image = (*decoder).image;
     if image.is_null() {
         return Err(msg(
@@ -369,6 +372,16 @@ pub fn stream(
                     return Ok(());
                 }
 
+                // Decodifica ANTES de esperar: o decode acontece enquanto o frame
+                // anterior ainda esta sendo exibido, em vez de somar decode + duracao.
+                let result = avifDecoderNextImage(decoder);
+                if result != AVIF_RESULT_OK {
+                    return Err(result_error(decoder, result, lang));
+                }
+
+                let (width, height, rgba) = rgba_frame(decoder, lang)?;
+                let duration_ms = frame_duration_ms(decoder, animated);
+
                 if let Some(started) = last_emit {
                     let target = Duration::from_millis(last_duration as u64);
                     let elapsed = started.elapsed();
@@ -376,23 +389,6 @@ pub fn stream(
                         std::thread::sleep(target - elapsed);
                     }
                 }
-
-                let result = avifDecoderNextImage(decoder);
-                if result != AVIF_RESULT_OK {
-                    return Err(result_error(decoder, result, lang));
-                }
-
-                let (width, height, rgba) = rgba_frame(decoder, lang)?;
-                let duration_ms = if animated {
-                    let seconds = (*decoder).imageTiming.duration;
-                    if seconds > 0.0 {
-                        (seconds * 1000.0).round().clamp(1.0, u32::MAX as f64) as u32
-                    } else {
-                        100
-                    }
-                } else {
-                    0
-                };
 
                 let info = FrameInfo {
                     width,
@@ -422,6 +418,25 @@ pub fn stream(
                 }
             }
         }
+    }
+}
+
+unsafe fn frame_duration_ms(decoder: *mut avifDecoder, animated: bool) -> u32 {
+    if !animated {
+        return 0;
+    }
+    let timing = (*decoder).imageTiming;
+    let seconds = if timing.duration > 0.0 {
+        timing.duration
+    } else if timing.timescale > 0 {
+        timing.durationInTimescales as f64 / timing.timescale as f64
+    } else {
+        0.0
+    };
+    if seconds > 0.0 {
+        (seconds * 1000.0).round().clamp(1.0, u32::MAX as f64) as u32
+    } else {
+        100
     }
 }
 
