@@ -3,7 +3,7 @@
 #![cfg(target_os = "macos")]
 
 use core_foundation_sys::base::{CFRelease, CFTypeRef};
-use core_foundation_sys::string::{kCFStringEncodingUTF8, CFStringRef, CFStringCreateWithCString};
+use core_foundation_sys::string::{kCFStringEncodingUTF8, CFStringCreateWithCString, CFStringRef};
 use std::ffi::CString;
 use std::ptr;
 
