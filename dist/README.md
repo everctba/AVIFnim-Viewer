@@ -2,19 +2,19 @@
 
 Pasta de artefatos locais (binários **não** versionados; README/checksums são).
 
-## Build atual — 0.1.2 (não publicado; portátil Windows em `d6b070f`, Linux/macOS em `edcecbc`)
+## Build atual — 0.1.2 (não publicado; portátil Windows em `d6b070f`, Linux/macOS em `09165df`)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
 | `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,75 MB | `73765fa3…c029ee` |
 | `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `3af80d0b…7b60f1` |
 | `AVIFnim.Viewer_0.1.2_x64.msix` | Windows x64 — **Microsoft Store** (sem assinatura) | 4,29 MB | `0f7137b2…855f47` |
-| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,30 MB | `e531aaca…98aa6f` |
-| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `901541aa…c35807` |
+| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,30 MB | `0bd00fd4…f7979d` |
+| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `4a2dd63a…bb77c1` |
 
-> Linux `edcecbc`: AVIF fallback **libavif + dav1d** + streaming RGBA em `<canvas>`, com **decode
-> adiantado e deadline absoluto** (sem somar decode à duração do frame) — sem PNG/base64 e sem
-> limite de 300 frames. Windows/macOS mantêm o WebView/`avif-rust`.
+> Linux `09165df`: descrição do `.deb` fixa em **inglês** (short/long), AVIF nativo com
+> libavif/dav1d, streaming RGBA em canvas e pacing por deadline. Windows/macOS mantêm
+> WebView/`avif-rust`.
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
 não instala, não cria atalhos e não registra associações. Requer o WebView2 Runtime (Windows 10/11
