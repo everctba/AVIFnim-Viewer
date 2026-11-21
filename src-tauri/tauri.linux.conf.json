@@ -1,6 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "bundle": {
+    "shortDescription": "Free and open-source viewer for animated AVIF, WebP, GIF, PPM/PNM and image sequences",
+    "longDescription": "AVIFnim Viewer is a free and open-source (MIT) viewer for animated and still AVIF, WebP and GIF images, PPM/PNM and numbered PNG/JPG sequences. It opens files, loops animations and navigates folders with bidirectional prefetch. No telemetry.",
     "fileAssociations": [
       {
         "ext": ["avif"],

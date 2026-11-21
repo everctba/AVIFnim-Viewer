@@ -59,6 +59,15 @@ jobs:
       - name: Normalize .deb package name
         run: bash scripts/fix-deb-package-name.sh
 
+      - name: Verify English package description
+        run: |
+          set -e
+          deb="$(ls src-tauri/target/release/bundle/deb/*.deb | head -n1)"
+          description="$(dpkg-deb -f "$deb" Description)"
+          echo "$description"
+          echo "$description" | head -n1 | grep -q 'Free and open-source'
+          echo "OK: descricao do .deb em ingles"
+
       - name: Upload .deb
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
