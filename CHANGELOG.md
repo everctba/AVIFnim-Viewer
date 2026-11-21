@@ -14,6 +14,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **Linux: streaming AVIF em canvas**: frames RGBA crus vão do backend ao frontend por canal binário
   do Tauri e são desenhados em `<canvas>` — sem PNG/base64; primeiro frame aparece antes de todos
   serem decodificados.
+- **Limite de 300 frames removido**: com streaming a memória fica limitada por frame; AVIF animados
+  longos não são mais rejeitados (Linux e fallback PNG).
 - **Fallback AVIF grande**: o limite passou a contar os **PNGs comprimidos** (não o RGBA bruto
   acumulado), permitindo AVIF animados maiores; a mensagem de erro agora informa frames/dimensões.
 - **Pacote MSIX para Microsoft Store**: build separado (`msix/`, `scripts/build-msix.ps1` e
