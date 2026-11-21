@@ -2,18 +2,19 @@
 
 Pasta de artefatos locais (binários **não** versionados; README/checksums são).
 
-## Build atual — 0.1.2 (não publicado; portátil Windows `d6b070f`, MSIX `fcd2fd3`, Linux/macOS `ef2d9ad`)
+## Build atual — 0.1.2 (não publicado; portátil Windows `d6b070f`, MSIX `fcd2fd3`, Linux/macOS `aba22d2`)
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
 | `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,75 MB | `73765fa3…c029ee` |
 | `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `3af80d0b…7b60f1` |
 | `AVIFnim.Viewer_0.1.2_x64.msix` | Windows x64 — **Microsoft Store** (sem assinatura) | 4,29 MB | `57290e10…aaa853` |
-| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,30 MB | `26588d25…bcf6fc` |
-| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `dbafe5a7…656d36` |
+| `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,30 MB | `c247fed1…351f11` |
+| `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `732320d8…5ae03f` |
 
-> Linux `ef2d9ad`: inclui o fallback estático `fallback-about.webp` no card do Sobre.
-> MSIX `fcd2fd3` rebuildado com o código atual; sem assinatura para upload no Partner Center.
+> Linux `aba22d2`: CTA do AVIFnim abre a **página de compra** (`#comprar`) no navegador,
+> com abertura destacada; inclui o fallback `fallback-about.webp` no Sobre.
+> MSIX `fcd2fd3` rebuildado; sem assinatura para upload no Partner Center.
 
 **Portátil (unpacked):** abra `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` diretamente —
 não instala, não cria atalhos e não registra associações. Requer o WebView2 Runtime (Windows 10/11

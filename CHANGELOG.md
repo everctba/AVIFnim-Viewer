@@ -9,6 +9,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 - **Novo ícone do aplicativo** (design do owner, `icone.png` → ícones Windows/macOS/Linux).
 - **`.deb`: descrição fixa em inglês** (short/long), independente do idioma do sistema.
+- **CTA do AVIFnim**: o botão do banner/About abre a página de compra do site (`#comprar`) no
+  navegador, com abertura destacada (não bloqueia a UI).
 - **Linux: AVIF nativo (libavif + dav1d)**: fallback AVIF do Linux passou a usar libavif/dav1d
   estáticos (CPU, sem FFmpeg/GPL), no lugar do `avif-rust`; Windows/macOS continuam com `avif-rust`.
   Testes no CI decodificam `anim.avif` (8 frames) e `still.avif`.
