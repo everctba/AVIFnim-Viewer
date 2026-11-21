@@ -1108,11 +1108,9 @@ function maybeShowPromo(viewCount) {
 }
 
 function openAvifnim() {
-  const url = state.appInfo && state.appInfo.avifnimUrl;
-  if (!url) {
-    toast(t("toast.linkPending"));
-    return;
-  }
+  const url =
+    (state.appInfo && state.appInfo.avifnimUrl) ||
+    "https://everctba.github.io/avifnim-site/#comprar";
   invoke("open_url", { url }).catch((err) => toast(String(err)));
 }
 

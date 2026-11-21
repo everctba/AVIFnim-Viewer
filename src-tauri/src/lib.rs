@@ -32,6 +32,8 @@ const MAX_FILE_BYTES: u64 = 256 * 1024 * 1024;
 const REPO_URL: &str = "https://github.com/everctba/AVIFnim-Viewer";
 const SITE_URL: &str = "https://everctba.github.io/avifnim-site";
 const AVIFNIM_URL: &str = "https://everctba.github.io/avifnim-site";
+// CTA "Conheça/Converter com AVIFnim": abre direto a secao de compra.
+const AVIFNIM_SALES_URL: &str = "https://everctba.github.io/avifnim-site/#comprar";
 // Pagina de doacao (PayPal). O sufixo "/" permite query string (business, amount, currency).
 const PAYPAL_URL: &str = "https://www.paypal.com/donate/";
 
@@ -42,6 +44,7 @@ const ALLOWED_URLS: &[&str] = &[
     REPO_URL,
     SITE_URL,
     AVIFNIM_URL,
+    AVIFNIM_SALES_URL,
     PAYPAL_URL,
     "mailto:mayerdesigner@gmail.com",
 ];
@@ -597,7 +600,7 @@ fn app_info() -> AppInfo {
         license: "MIT".into(),
         repo_url: REPO_URL.into(),
         site_url: SITE_URL.into(),
-        avifnim_url: AVIFNIM_URL.into(),
+        avifnim_url: AVIFNIM_SALES_URL.into(),
         platform: std::env::consts::OS.into(),
         msix: is_msix_packaged(),
     }
@@ -689,7 +692,7 @@ fn open_url(url: String, state: tauri::State<'_, AppState>) -> Result<(), String
             "URL not allowed by AVIFnim Viewer".to_string(),
         ));
     }
-    open::that(url).map_err(|e| {
+    open::that_detached(url).map_err(|e| {
         localized(
             &lang,
             format!("Falha ao abrir o navegador: {e}"),
@@ -994,6 +997,7 @@ mod tests {
         assert!(is_allowed_url("mailto:mayerdesigner@gmail.com"));
         assert!(is_allowed_url(SITE_URL));
         assert!(is_allowed_url(AVIFNIM_URL));
+        assert!(is_allowed_url(AVIFNIM_SALES_URL));
         assert!(is_allowed_url("https://everctba.github.io/avifnim-site/"));
         assert!(is_allowed_url(PAYPAL_URL));
         assert!(is_allowed_url(
