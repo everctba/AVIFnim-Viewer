@@ -14,7 +14,6 @@ use std::time::{Duration, Instant};
 use tauri::ipc::{Channel, InvokeResponseBody};
 
 const MAX_PIXELS: u64 = 100_000_000; // 100 MPix por frame
-const MAX_FRAMES: usize = 300;
 const MAX_TOTAL_PNG_BYTES: u64 = 384 * 1024 * 1024;
 
 #[derive(Debug, Serialize)]
@@ -153,13 +152,6 @@ pub fn decode(data: &[u8], lang: &str) -> Result<AvifPayload, String> {
                 lang,
                 "AVIF sem imagens".to_string(),
                 "AVIF has no images".to_string(),
-            ));
-        }
-        if image_count as usize > MAX_FRAMES {
-            return Err(msg(
-                lang,
-                format!("AVIF com frames demais (limite {MAX_FRAMES})"),
-                format!("AVIF has too many frames (limit {MAX_FRAMES})"),
             ));
         }
 
@@ -365,13 +357,6 @@ pub fn stream(
                     lang,
                     "AVIF sem imagens".to_string(),
                     "AVIF has no images".to_string(),
-                ));
-            }
-            if image_count as usize > MAX_FRAMES {
-                return Err(msg(
-                    lang,
-                    format!("AVIF com frames demais (limite {MAX_FRAMES})"),
-                    format!("AVIF has too many frames (limit {MAX_FRAMES})"),
                 ));
             }
 

@@ -4,7 +4,6 @@ use serde::Serialize;
 
 /// Limites de seguranca do fallback AVIF (o webview pode nao suportar AVIF).
 const MAX_PIXELS: u64 = 100_000_000; // 100 MPix por frame
-const MAX_FRAMES: usize = 300;
 /// Limite do que fica de fato guardado (PNG comprimido), nao do RGBA bruto.
 /// O decoder processa um frame por vez; frames 1080p comprimem para ~1 MB.
 const MAX_TOTAL_PNG_BYTES: u64 = 384 * 1024 * 1024;
@@ -94,13 +93,6 @@ pub fn decode(data: &[u8], lang: &str) -> Result<AvifPayload, String> {
                     if frames.is_empty() {
                         width = image.width as u32;
                         height = image.height as u32;
-                    }
-                    if frames.len() >= MAX_FRAMES {
-                        return Err(msg(
-                            lang,
-                            format!("AVIF com frames demais (limite {MAX_FRAMES})"),
-                            format!("AVIF has too many frames (limit {MAX_FRAMES})"),
-                        ));
                     }
                     let (data_url, png_size) =
                         png_data_url(&image.rgba, image.width as u32, image.height as u32)?;
