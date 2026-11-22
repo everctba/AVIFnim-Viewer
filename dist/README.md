@@ -6,13 +6,14 @@ Pasta de artefatos locais (binários **não** versionados; README/checksums são
 
 | Arquivo | Plataforma | Tamanho | SHA-256 |
 |---|---|---|---|
-| `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,77 MB | `44797713…09635c` |
+| `AVIFnim.Viewer_0.1.2_x64-setup.exe` | Windows 10/11 x64 (NSIS) | 3,77 MB | `c8c7f91b…e2d650` |
 | `AVIFnim.Viewer_0.1.2_x64-unpacked/AVIFnim Viewer.exe` | Windows x64 **portátil** (sem instalar) | 6,43 MB | `3af80d0b…7b60f1` |
 | `AVIFnim.Viewer_0.1.2_x64.msix` | Windows x64 — **Microsoft Store** (sem assinatura) | 4,29 MB | `57290e10…aaa853` |
 | `avifnim-viewer_0.1.2_amd64.deb` | Linux x64 (Ubuntu 22.04+/Mint) | 4,30 MB | `73e6101a…f7e0ed` |
 | `AVIFnim.Viewer_0.1.2_universal.dmg` | macOS 13+ (Intel + Apple Silicon) | 12,68 MB | `a321f373…075d98` |
 
-> Desinstalação: Windows NSIS apaga o atalho do Desktop pelo nome exato, mesmo com alvo antigo;
+> Desinstalação: Windows NSIS apaga o atalho do Desktop pelo nome exato, mesmo com alvo antigo,
+> e limpa as chaves de desinstalação em **HKCU e HKLM** (inclui entradas órfãs);
 > Linux remove de todos os usuários (apt, terminal ou interface gráfica). MSIX não cria atalho de
 > Desktop; macOS não tem desinstalador/atalho de Desktop.
 

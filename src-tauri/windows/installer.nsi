@@ -912,14 +912,11 @@ Section Uninstall
     Delete "$DESKTOP\${PRODUCTNAME}.lnk"
   ${EndIf}
 
-  ; Remove registry information for add/remove programs
-  !if "${INSTALLMODE}" == "both"
-    DeleteRegKey SHCTX "${UNINSTKEY}"
-  !else if "${INSTALLMODE}" == "perMachine"
-    DeleteRegKey HKLM "${UNINSTKEY}"
-  !else
-    DeleteRegKey HKCU "${UNINSTKEY}"
-  !endif
+  ; Remove registry information for add/remove programs.
+  ; Limpa HKCU e HKLM para tambem apagar entradas orfas de versoes antigas
+  ; (por exemplo, instalacao removida manualmente sem rodar o uninstaller).
+  DeleteRegKey HKCU "${UNINSTKEY}"
+  DeleteRegKey HKLM "${UNINSTKEY}"
 
   ; Removes the Autostart entry for ${PRODUCTNAME} from the HKCU Run key if it exists.
   ; This ensures the program does not launch automatically after uninstallation if it exists.
