@@ -11,6 +11,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - **`.deb`: descrição fixa em inglês** (short/long), independente do idioma do sistema.
 - **Linux: desinstalação remove o atalho do Desktop** de todos os usuários humanos, funcionando
   também pela interface gráfica (quando `SUDO_USER`/`PKEXEC_UID` não existem).
+- **Windows: desinstalação remove o atalho do Desktop pelo nome exato**, mesmo se o executável
+  antigo não existir mais (antes só removia quando o alvo do `.lnk` ainda batia).
 - **CTA do AVIFnim**: o botão do banner/About abre a página de compra do site (`#comprar`) no
   navegador, com abertura destacada (não bloqueia a UI).
 - **Linux: AVIF nativo (libavif + dav1d)**: fallback AVIF do Linux passou a usar libavif/dav1d

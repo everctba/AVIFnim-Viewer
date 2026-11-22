@@ -907,6 +907,9 @@ Section Uninstall
       !insertmacro UnpinShortcut "$DESKTOP\${PRODUCTNAME}.lnk"
       Delete "$DESKTOP\${PRODUCTNAME}.lnk"
     ${EndIf}
+    ; Garante a remocao mesmo se o alvo do atalho nao existir mais
+    ; (app movido/atualizado ou instalacao antiga): apaga pelo nome exato.
+    Delete "$DESKTOP\${PRODUCTNAME}.lnk"
   ${EndIf}
 
   ; Remove registry information for add/remove programs
